@@ -1,0 +1,53 @@
+.calendar-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding: 10px 0;
+}
+
+.day {
+    flex: 0 0 auto;
+    padding: 10px 15px;
+    border-radius: 10px;
+    background-color: #eee;
+    text-align: center;
+    min-width: 80px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.day.today {
+    background-color: #3880ff;
+    color: white;
+    font-weight: bold;
+}
+
+.task-continer {
+    margin-top: 20px;
+}
+
+ion-footer ion-toolbar {
+    --background: #ffffff;
+    border-top: 1px solid #ccc;
+}
+
+.tab {
+    text-align: center;
+    color: #666;
+    font-size: 12px;
+}
+
+.tab ion-icon {
+    display: block;
+    font-size: 24px;
+    margin-bottom: 2 px;
+}
+
+.tab.active {
+    color: #3880ff;
+    font-weight: bold;
+}
+
+.tab.active ion-icon {
+    font-size: 26px;
+}
