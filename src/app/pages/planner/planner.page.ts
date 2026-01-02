@@ -1,7 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { AddTaskModal } from './modals/add-task.modal';
+
+
+export interface Task {
+  title: string;
+  description?: string;
+  time?: string;
+}
+
 
 @Component({
   selector: 'app-planner',
@@ -10,29 +20,30 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [IonicModule, CommonModule]
 })
-
 export class PlannerPage implements OnInit {
 
+  // Calendario
   days: { date: Date, isToday: boolean }[] = [];
   selectedDay: { date: Date, isToday: boolean } | null = null;
 
-  // Tab 'attiva' nella barra di navigazione 
+  // Tab attiva della barra di navigazione
   activeTab: string = 'planner';
-  
-  // Ogni giorno ha un array di task (esempio)
+
+  // Task dinamiche per giorno
   tasks: { [key: string]: string[] } = {
     [new Date().toDateString()]: ['Compito matematica', 'Lezione storia', 'Progetto informatica']
   };
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private modalController: ModalController) {}
 
   ngOnInit() {
     this.generateDays();
   }
 
+  // Genera 30 giorni a partire da oggi
   generateDays() {
     const today = new Date();
-    const totalDays = 30; // 30 giorni da mostrare
+    const totalDays = 30;
     for (let i = 0; i < totalDays; i++) {
       const date = new Date();
       date.setDate(today.getDate() + i);
@@ -43,13 +54,36 @@ export class PlannerPage implements OnInit {
     this.selectedDay = this.days.find(d => d.isToday) || this.days[0];
   }
 
+  // Seleziona giorno
   selectDay(day: { date: Date, isToday: boolean }) {
     this.selectedDay = day;
   }
 
-  // Per la barra di navigazione
-  navigate(page: string){
+  // Navigazione barra in basso
+  navigate(page: string) {
     console.log('Naviga verso:', page);
-    if(page == 'planner') this.router.navigate(['/planner']);
-  } 
+    if (page === 'planner') this.router.navigate(['/planner']);
+    // altre pagine possono essere aggiunte qui
+  }
+
+  // --- APRI MODALE PER NUOVA TASK ---
+  async openAddTaskModal() {
+    const modal = await this.modalController.create({
+      component: AddTaskModal,
+      cssClass: 'add-task-modal',
+      componentProps: {
+        selectedDay: this.selectedDay
+      }
+    });
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data && result.data.newTask && this.selectedDay) {
+        const dayKey = this.selectedDay.date.toDateString();
+        if (!this.tasks[dayKey]) this.tasks[dayKey] = [];
+        this.tasks[dayKey].push(result.data.newTask);
+      }
+    });
+
+    return await modal.present();
+  }
 }

@@ -25,6 +25,25 @@
   </div>
 </ion-content>
 
+
+<!-- Input per nuova task -->
+<ion-button expand="full" class="ion-margin" (click)="openAddTaskModal()">
+  + Aggiungi Task
+</ion-button>
+
+
+<!-- Lista delle task giornaliere -->
+  <div *ngIf="selectedDay">
+    <ion-list>
+      <ion-item *ngFor="let task of tasks[selectedDay.date.toDateString()]">
+        {{ task }}
+      </ion-item>
+    </ion-list>
+  </div>
+
+
+
+
 <!-- Barra di navigazione -->
  <ion-footer>
   <ion-toolbar>
