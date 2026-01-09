@@ -6,18 +6,22 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
+  styleUrls: ['./login.page.scss'],
   standalone: true,
   imports: [IonicModule, FormsModule]
 })
 export class LoginPage {
-  username = '';
+  email = '';
   password = '';
 
   constructor(private router: Router) {}
 
   login() {
-    // Per ora login "fittizio", accetta qualsiasi username/password
-    console.log('Login:', this.username, this.password);
-    this.router.navigate(['/planner']);
+    if(this.email && this.password) {
+      console.log('Login effettuato con: ', this.email, this.password);
+      this.router.navigate(['/planner']);
+    } else {
+      console.log('Dati mancanti!');
+    }
   }
 }

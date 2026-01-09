@@ -1,0 +1,157 @@
+/* ===========================
+   PAGINA LOGIN
+=========================== */
+:host {
+  --ion-background-color: #f4f3f1;
+  --ion-text-color: #344c3d;
+}
+
+ion-content.login-page {
+  --ion-background-color: trasparent;
+  background-image: url('/assets/background/sfondo.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ===========================
+   CONTAINER CENTRALE
+=========================== */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;  /* verticale */
+  align-items: center;      /* orizzontale */
+  height: 100%;
+  padding: 0 20px;
+}
+
+/* ===========================
+   LOGO & TITOLO
+=========================== */
+.logo-container {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.logo-image {
+  width: 140px;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+
+.logo-container h1 {
+  font-size: 40px;
+  font-weight: bold;
+  color: #344c3d;
+  margin-top: 10px;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
+  font-family: var(--font-pixel);
+  letter-spacing: 1px;
+}
+
+/* ===========================
+   FORM
+=========================== */
+.form-wrapper {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+ion-item {
+  --background: #8e9886;
+  width: 100%;
+  color: #fff;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  --highlight-color-focused: transparent;
+  --highlight-color: transparent;
+  --border-color: transparent;
+  --border-style: none;
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+ion-item:focus-within {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transform: translateY(-2px);
+}
+
+ion-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+ion-item ion-input {
+  color: #fff;
+  font-weight: bold;
+  font-family: var(--font-pixel);
+  letter-spacing: 1px;
+}
+
+/* ===========================
+   BOTTONE LOGIN
+=========================== */
+.login-btn {
+  --background: #d8959b;
+  color: #fff;
+  font-weight: bold;
+  margin-top: 20px;
+  width: 65%;
+  font-family: var(--font-pixel);
+}
+
+ion-button.login-btn::part(native) {
+    border-radius: 999px;
+}
+
+.login-btn:hover {
+    border-radius: 999px;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.login-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* ===========================
+   LINK REGISTRAZIONE
+=========================== */
+.register-link {
+  text-align: center;
+  margin-top: 20px;
+  color: #344c3d;
+}
+
+.register-link a {
+  color: #d8959b;
+  font-weight: bold;
+  text-decoration: none;
+  font-family: var(--font-pixel);
+}
+
+/* ===========================
+   RESPONSIVO
+=========================== */
+@media (max-width: 400px) {
+  .logo-image {
+    width: 80px;
+  }
+  .logo-container h1 {
+    font-size: 28px;
+  }
+}

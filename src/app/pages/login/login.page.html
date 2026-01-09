@@ -1,23 +1,37 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Login</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="login-page">
 
-<ion-content class="ion-padding">
-  <form (ngSubmit)="login()" #loginForm="ngForm">
-    <ion-item>
-      <ion-label position="floating">Username</ion-label>
-      <ion-input type="text" name="username" [(ngModel)]="username" required></ion-input>
-    </ion-item>
+  <div class="login-container">
 
-    <ion-item>
-      <ion-label position="floating">Password</ion-label>
-      <ion-input type="password" name="password" [(ngModel)]="password" required></ion-input>
-    </ion-item>
+    <!-- LOGO -->
+    <div class="logo-container">
+      <img src="assets/icon/logo.png" alt="Logo MyStudyPlanner" class="logo-image">
+      <h1>MyStudyPlanner</h1>
+    </div>
 
-    <ion-button expand="full" type="submit" class="ion-margin-top">
-      Accedi
-    </ion-button>
-  </form>
+    <!-- FORM -->
+    <form class="form-wrapper" (ngSubmit)="login()">
+
+      <ion-item>
+        <ion-label position="floating">Email</ion-label>
+        <ion-input type="email" [(ngModel)]="email" name="email" required></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Password</ion-label>
+        <ion-input type="password" [(ngModel)]="password" name="password" required></ion-input>
+      </ion-item>
+
+      <ion-button expand="full" class="login-btn" type="submit">
+        Accedi
+      </ion-button>
+
+    </form>
+
+    <!-- LINK REGISTRAZIONE -->
+    <div class="register-link">
+      <p>Non hai un account? <a routerLink="/register">Registrati</a></p>
+    </div>
+
+  </div>
+
 </ion-content>
