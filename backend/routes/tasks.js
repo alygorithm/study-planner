@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Task = require('../models/Task'); // <-- assicurati che il file sia Task.js
+const Task = require('../models/taskTemp'); // <-- assicurati che il file sia Task.js
 
 // GET: tutte le task
 router.get('/', async (req, res) => {
