@@ -4,34 +4,85 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-    <h2>Report delle tue attività</h2>
-    <p> BLA BLA BLA</p>
+<ion-content class="stats-page ion-padding">
+
+  <!-- Totale e media ore -->
+  <div class="summary-boxes">
+    <div class="summary-box">
+      <h2>Totale settimanale</h2>
+      <p>{{ (totalMinutes / 60) | number:'1.0-1' }}h</p>
+    </div>
+    <div class="summary-box">
+      <h2>Media giornaliera</h2>
+      <p>{{ (totalMinutes / 7 / 60) | number:'1.0-1' }}h</p>
+    </div>
+  </div>
+
+  <!-- Grafico settimanale -->
+  <div class="weekly-graph">
+    <h2>Ore per giorno</h2>
+    <div class="bars">
+      <div *ngFor="let day of weekStats" class="bar-container">
+        <span class="bar-label">{{ day.label }}</span>
+        <div class="bar" [style.height.%]="day.percentage">
+          <span class="bar-value">{{ day.hours }}h</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progresso giornaliero -->
+  <div class="daily-progress">
+    <h2>Progresso odierno</h2>
+    <ion-progress-bar [value]="todayProgress" color="success"></ion-progress-bar>
+    <p>{{ todayMinutes }} / {{ todayTarget }} min</p>
+  </div>
+
+  <!-- Lista sessioni Focus -->
+  <div class="focus-list">
+    <h2>Sessioni Focus completate</h2>
+    <div *ngFor="let session of focusSessions" class="session-item">
+      <span class="session-time">{{ session.minutes }} min</span>
+      <span class="session-subject">{{ session.subject }}</span>
+      <ion-icon 
+        [name]="session.completed ? 'checkmark-circle-outline' : 'alert-circle-outline'" 
+        [color]="session.completed ? 'success' : 'warning'">
+      </ion-icon>
+    </div>
+  </div>
+
 </ion-content>
 
-<!-- Barra di navigazione -->
 <ion-footer>
   <ion-toolbar>
     <ion-grid>
       <ion-row>
         <ion-col class="tab" [class.active]="activeTab === 'planner'" (click)="navigate('planner')">
-          <ion-icon name="calendar-outline"></ion-icon>
-          <ion-label>Planner</ion-label>
+          <div class="tab-content">
+            <img src="assets/icon/calendario.jpeg" class="logo-image">
+            <ion-label>Planner</ion-label>
+          </div>
         </ion-col>
 
         <ion-col class="tab" [class.active]="activeTab === 'stats'" (click)="navigate('stats')">
-          <ion-icon name="bar-chart-outline"></ion-icon>
-          <ion-label>Statistiche</ion-label>
+          <div class="tab-content">
+            <img src="assets/icon/statistiche.jpeg" class="logo-image">
+            <ion-label>Statistiche</ion-label>
+          </div>
         </ion-col>
 
         <ion-col class="tab" [class.active]="activeTab === 'focus'" (click)="navigate('focus')">
-          <ion-icon name="timer-outline"></ion-icon>
-          <ion-label>Focus</ion-label>
+          <div class="tab-content">
+            <img src="assets/icon/orologio.jpeg" class="logo-image">
+            <ion-label>Focus</ion-label>
+          </div>
         </ion-col>
 
         <ion-col class="tab" [class.active]="activeTab === 'profile'" (click)="navigate('profile')">
-          <ion-icon name="person-outline"></ion-icon>
-          <ion-label>Profilo</ion-label>
+          <div class="tab-content">
+            <img src="assets/icon/profilo.jpeg" class="logo-image">
+            <ion-label>Profilo</ion-label>
+          </div>
         </ion-col>
       </ion-row>
     </ion-grid>

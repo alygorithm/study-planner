@@ -1,21 +1,105 @@
-.time-container {
+:host {
+  --ion-background-color: #f4f3f1;  /* Sfondo principale */
+  --ion-text-color: #344c3d;        /* Colore testo principale */
+}
+
+ion-header ion-toolbar {
+  --background: #f2d1d4; /* Rosa pastello */
+  color: #344c3d;         /* Verde scuro per testo */
+}
+
+ion-header ion-title {
+  color: #344c3d;
+  font-family: var(--font-pixel);
+  font-size: 25px;
   text-align: center;
-  margin-top: 50px;
+  letter-spacing: 1px;
+}
 
-  h1 {
-    font-size: 5rem;
-    color: #344c3d;
-    margin-bottom: 40px;
-  }
 
-  .buttons {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
+.focus-wrapper {
+  display: flex;
+  justify-content: center;   // centra orizzontalmente
+  align-items: center;  
+  padding-top: 80px;       // assicura piena altezza viewport
+}
 
-    ion-button {
-      border-radius: 10px;
-      min-width: 100px;
-    }
-  }
+.time-container {
+  background: #ffffff;
+  padding: 32px 24px;
+  border-radius: 20px;
+  text-align: center;
+  width: 100%;
+  max-width: 320px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+}
+
+.focus-image {
+  width: 160px;
+  max-width: 100%;
+  margin: 0 auto 16px;
+  display: block;
+  opacity: 0.85;
+  filter: saturate(0.9) blur(0.2px);
+}
+
+.timer {
+  font-size: 56px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #344c3d;
+  margin-bottom: 24px;
+  font-family: var(--font-pixel);
+  font-size: 65px;
+  font-weight: lighter;
+}
+
+.buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.buttons ion-button {
+  flex: 1;
+  --border-radius: 14px;
+  font-weight: 500;
+}
+
+.start {
+  --background: #829672;
+  color: #fff;
+  font-weight: bold;
+  font-family: var(--font-pixel);
+}
+
+.start:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  border-radius: 14px;
+}
+
+.pause {
+  --background: #d8ce95;
+  font-weight: bold;
+  font-family: var(--font-pixel);
+}
+
+.pause:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  border-radius: 14px;
+}
+
+.reset {
+  --background: #d8959b;
+  color: #fff;
+  font-weight: bold;
+  font-family: var(--font-pixel);
+}
+
+.reset:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  border-radius: 14px;
 }

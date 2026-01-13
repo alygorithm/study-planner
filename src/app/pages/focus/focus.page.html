@@ -1,25 +1,32 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Focus Mode</ion-title>
-
     <ion-buttons slot="end">
-      <ion-button fill="clear" (click)="closeFocus()">
-        Chiudi
-      </ion-button>
+      <!-- Modifica il click per usare closeFocus() -->
+      <ion-button class="close-btn" (click)="closeFocus()">✕</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-
+<ion-content class="focus-page ion-padding">
+  <div class="focus-wrapper">
     <div class="time-container">
-        <h1>{{ timerMinutes | number:'2.0' }}:{{ timerSeconds | number:'2.0' }}</h1>
+      <img src="assets/icon/timer.jpeg" class="focus-image"/>
+      <h1 class="timer">
+        {{ timerMinutes | number:'2.0' }}:{{ timerSeconds | number:'2.0' }}
+      </h1>
 
-        <div class="buttons">
-            <ion-button color="success" (click)="startTimer()" [disabled]="isRunning">Start</ion-button>
-            <ion-button color="warning" (click)="pauseTimer()" [disabled]="!isRunning">Pause</ion-button>
-            <ion-button color="danger" (click)="resetTimer()">Reset</ion-button>
-        </div>
+      <div class="buttons">
+        <ion-button class="start" (click)="startTimer()" [disabled]="isRunning">
+          Start
+        </ion-button>
+        <ion-button class="pause" (click)="pauseTimer()" [disabled]="!isRunning">
+          Pause
+        </ion-button>
+        <ion-button class="reset" (click)="resetTimer()">
+          Reset
+        </ion-button>
+      </div>
     </div>
-    
+  </div>
 </ion-content>

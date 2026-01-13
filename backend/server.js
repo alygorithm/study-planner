@@ -23,6 +23,9 @@ app.get('/', (req, res) => {
   res.send('Backend funzionante!');
 });
 
+const focusSessionRouter = require('./routes/focus');
+app.use('/api/focus-sessions', focusSessionRouter);
+
 // Avvio server
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server in ascolto su http://0.0.0.0:${PORT}`);
