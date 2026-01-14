@@ -14,15 +14,13 @@ import { Task } from './task.model';
   templateUrl: './planner.page.html',
   styleUrls: ['./planner.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule] // <-- niente HttpClientModule qui
+  imports: [IonicModule, CommonModule]
 })
-
 export class PlannerPage implements OnInit {
   days: { date: Date, isToday: boolean }[] = [];
   selectedDay: { date: Date, isToday: boolean } | null = null;
   activeTab: string = 'planner';
   tasks: { [key: string]: Task[] } = {};
-  studyLoadMap: { [key: string]: number } = {};
 
   constructor(
     private router: Router,
@@ -33,8 +31,9 @@ export class PlannerPage implements OnInit {
   ngOnInit() {
     this.generateDays();
     this.fetchTasksFromBackend();
-    this.updateStudyLoadMap();
   }
+
+  // ------------------ Giorni ------------------
 
   generateDays() {
     const today = new Date();
@@ -50,15 +49,14 @@ export class PlannerPage implements OnInit {
     this.selectedDay = day;
   }
 
+  // ------------------ Navigazione ------------------
+
   navigate(page: string) {
     this.activeTab = page;
-    switch(page) {
-      case 'planner': this.router.navigate(['/planner']); break;
-      case 'focus': this.router.navigate(['/focus']); break;
-      case 'profile': this.router.navigate(['/profile']); break;
-      case 'stats': this.router.navigate(['/stats']); break;
-    }
+    this.router.navigate([`/${page}`]);
   }
+
+  // ------------------ Modali ------------------
 
   async openAddTaskModal() {
     if (!this.selectedDay) return;
@@ -96,24 +94,19 @@ export class PlannerPage implements OnInit {
     await modal.present();
   }
 
-  getStudyHoursForSelectedDay(): number {
-    if(!this.selectedDay) return 0;
+  // ------------------ Calcolo ore e minuti ------------------
+
+  getTodayStudyMessage(): string {
+    if (!this.selectedDay) return '';
     const dayKey = this.selectedDay.date.toDateString();
-    return StudyHoursCalculator.calculateDayHours(this.tasks[dayKey] || []);
+    const totalHoursDecimal = StudyHoursCalculator.calculateDayHours(this.tasks[dayKey] || []);
+    const { hours, minutes } = StudyHoursCalculator.formatHours(totalHoursDecimal);
+    return `Oggi sono previste ${hours} ore e ${minutes} minuti di studio.`;
   }
 
   getTodayStudyLoad(): DailyStudyLoad | null {
-    if(!this.selectedDay) return null;
+    if (!this.selectedDay) return null;
     return StudyLoadCalculator.calculateLoadForDay(this.tasks, this.selectedDay.date);
-  }
-
-  updateStudyLoadMap() {
-    this.studyLoadMap = {};
-    for (const day of this.days) {
-      const dayKey = day.date.toDateString();
-      const load = StudyLoadCalculator.calculateLoadForDay(this.tasks, day.date);
-      this.studyLoadMap[dayKey] = load.hours;
-    }
   }
 
   // ------------------ Backend ------------------
@@ -126,28 +119,22 @@ export class PlannerPage implements OnInit {
         if (!this.tasks[dayKey]) this.tasks[dayKey] = [];
         this.tasks[dayKey].push(task);
       });
-      this.updateStudyLoadMap();
     });
   }
 
   addTaskToBackend(task: Task) {
-    console.log('Invio task al backend:', task); // PASSO 3a: log
     this.taskService.addTask(task).subscribe(newTask => {
-      console.log('Task salvata dal backend:', newTask); // PASSO 3b: log ritorno
       const dayKey = new Date(newTask.day).toDateString();
       if (!this.tasks[dayKey]) this.tasks[dayKey] = [];
-        this.tasks[dayKey].push(newTask);
-        this.updateStudyLoadMap();
+      this.tasks[dayKey].push(newTask);
     });
-}
-
+  }
 
   deleteTaskFromBackend(task: Task) {
     if (!task._id) return;
     this.taskService.deleteTask(task._id).subscribe(() => {
       const dayKey = new Date(task.day).toDateString();
       this.tasks[dayKey] = this.tasks[dayKey].filter(t => t._id !== task._id);
-      this.updateStudyLoadMap();
     });
   }
 
@@ -156,7 +143,6 @@ export class PlannerPage implements OnInit {
     this.taskService.updateTask(task).subscribe(updated => {
       const dayKey = new Date(updated.day).toDateString();
       this.tasks[dayKey] = this.tasks[dayKey].map(t => t._id === updated._id ? updated : t);
-      this.updateStudyLoadMap();
     });
   }
 }

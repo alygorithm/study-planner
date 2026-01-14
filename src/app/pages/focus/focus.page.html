@@ -9,6 +9,7 @@
 </ion-header>
 
 <ion-content class="focus-page ion-padding">
+  
   <div class="focus-wrapper">
     <div class="time-container">
       <img src="assets/icon/timer.jpeg" class="focus-image"/>
@@ -17,7 +18,7 @@
       </h1>
 
       <div class="buttons">
-        <ion-button class="start" (click)="startTimer()" [disabled]="isRunning">
+        <ion-button class="start" (click)="openTaskModal()" [disabled]="isRunning">
           Start
         </ion-button>
         <ion-button class="pause" (click)="pauseTimer()" [disabled]="!isRunning">

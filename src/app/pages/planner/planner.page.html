@@ -17,10 +17,9 @@
     </div>
   </div>
 
-
-  <div class="study-load" *ngIf="getTodayStudyLoad() as load">
-    <p>Oggi: <b>{{ load.hours }} h di studio previste</b></p>
-    <small> {{ load.tasks.length }} task contribuiscono a queste ore </small>
+  <!-- Messaggio ore e minuti -->
+  <div class="study-load" *ngIf="selectedDay">
+    <p>{{ getTodayStudyMessage() }}</p>
   </div>
 
   <!-- Task del giorno selezionato -->

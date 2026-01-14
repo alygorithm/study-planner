@@ -4,7 +4,8 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="profile-page">
+
   <!-- CARD PROFILO -->
   <ion-card class="profile-card">
     <ion-avatar class="avatar">
@@ -15,53 +16,69 @@
   </ion-card>
 
   <!-- STATS -->
-<div class="profile-stats">
-  <ion-card class="stat-card">
-    <ion-card-header>
-      <ion-card-subtitle>Task completate</ion-card-subtitle>
-      <ion-card-title>{{ stats.completedTasks }}</ion-card-title>
-    </ion-card-header>
-  </ion-card>
-  <ion-card class="stat-card">
-    <ion-card-header>
-      <ion-card-subtitle>Ore di studio</ion-card-subtitle>
-      <ion-card-title>{{ stats.studyHours }}</ion-card-title>
-    </ion-card-header>
-  </ion-card>
-  <ion-card class="stat-card">
-    <ion-card-header>
-      <ion-card-subtitle>Percentuale completamento</ion-card-subtitle>
-      <ion-card-title>{{ stats.completionPercent }}%</ion-card-title>
-    </ion-card-header>
-  </ion-card>
-</div>
+  <div class="profile-stats">
+    <ion-card class="stat-card">
+      <ion-card-header>
+        <ion-card-subtitle>Task completate</ion-card-subtitle>
+        <ion-card-title>{{ stats.completedTasks }}</ion-card-title>
+      </ion-card-header>
+    </ion-card>
 
-<!-- AZIONI -->
-<div class="profile-actions">
-  <ion-button expand="block" color="success">Modifica Profilo</ion-button>
-  <ion-button expand="block" color="medium">Impostazioni</ion-button>
-  <ion-button expand="block" color="danger">Logout</ion-button>
-</div>
+    <ion-card class="stat-card">
+      <ion-card-header>
+        <ion-card-subtitle>Ore di studio</ion-card-subtitle>
+        <ion-card-title>{{ stats.studyHours }}</ion-card-title>
+      </ion-card-header>
+    </ion-card>
 
+    <ion-card class="stat-card">
+      <ion-card-header>
+        <ion-card-subtitle>Percentuale completamento</ion-card-subtitle>
+        <ion-card-title>{{ stats.completionPercent }}%</ion-card-title>
+      </ion-card-header>
+    </ion-card>
+  </div>
+
+  <!-- AZIONI -->
+  <div class="profile-actions">
+    <ion-button class="profile"expand="block">Modifica Profilo</ion-button>
+    <ion-button class="settings" expand="block">Impostazioni</ion-button>
+    <ion-button class="logout" expand="block">Logout</ion-button>
+  </div>
+
+</ion-content>
+
+<!-- NAV BAR -->
 <ion-footer>
   <ion-toolbar>
     <ion-grid>
       <ion-row>
         <ion-col class="tab" [class.active]="activeTab === 'planner'" (click)="navigate('planner')">
-          <ion-icon name="calendar-outline"></ion-icon>
-          <ion-label>Planner</ion-label>
+          <div class="tab-content">
+            <img src="assets/icon/calendario.jpeg" class="logo-image">
+            <ion-label>Planner</ion-label>
+          </div>
         </ion-col>
+
         <ion-col class="tab" [class.active]="activeTab === 'stats'" (click)="navigate('stats')">
-          <ion-icon name="bar-chart-outline"></ion-icon>
-          <ion-label>Statistiche</ion-label>
+          <div class="tab-content">
+            <img src="assets/icon/statistiche.jpeg" class="logo-image">
+            <ion-label>Statistiche</ion-label>
+          </div>
         </ion-col>
+
         <ion-col class="tab" [class.active]="activeTab === 'focus'" (click)="navigate('focus')">
-          <ion-icon name="timer-outline"></ion-icon>
-          <ion-label>Focus</ion-label>
+          <div class="tab-content">
+            <img src="assets/icon/orologio.jpeg" class="logo-image">
+            <ion-label>Focus</ion-label>
+          </div>
         </ion-col>
+
         <ion-col class="tab" [class.active]="activeTab === 'profile'" (click)="navigate('profile')">
-          <ion-icon name="person-outline"></ion-icon>
-          <ion-label>Profilo</ion-label>
+          <div class="tab-content">
+            <img src="assets/icon/profilo.jpeg" class="logo-image">
+            <ion-label>Profilo</ion-label>
+          </div>
         </ion-col>
       </ion-row>
     </ion-grid>

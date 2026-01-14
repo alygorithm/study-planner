@@ -1,8 +1,10 @@
-import { Component, OnDestroy } from '@angular/core';
-import { IonicModule, AlertController } from '@ionic/angular';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { IonicModule, AlertController, ModalController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { TaskService, FocusSession } from '../planner/task.service';
+import { TaskService } from '../planner/task.service';
+import { Task } from '../planner/task.model';
+import { FocusSelectModalComponent } from './modals/focus-select-modal.component';
 
 @Component({
   selector: 'app-focus',
@@ -11,30 +13,69 @@ import { TaskService, FocusSession } from '../planner/task.service';
   standalone: true,
   imports: [IonicModule, CommonModule]
 })
-export class FocusPage implements OnDestroy {
+export class FocusPage implements OnInit, OnDestroy {
 
-  timerMinutes: number = 25;
+  readonly INITIAL_MINUTES = 25;
+
+  timerMinutes: number = this.INITIAL_MINUTES;
   timerSeconds: number = 0;
   isRunning: boolean = false;
   private intervalId: any;
 
-  private timerCompleted: boolean = false; // indica se il timer è arrivato a 0
+  tasks: Task[] = [];
+  selectedTask: Task | null = null;
 
   constructor(
-    private router: Router, 
+    private router: Router,
     private alertCtrl: AlertController,
-    private taskService: TaskService
+    private taskService: TaskService,
+    private modalCtrl: ModalController
   ) {}
 
-  startTimer() {
-    if (this.isRunning) return;
-    this.isRunning = true;
-    this.timerCompleted = false; // reset
+  ngOnInit() {
+    this.loadTasks();
+  }
 
+  ngOnDestroy() {
+    clearInterval(this.intervalId);
+  }
+
+  // ---- TASK ----
+  loadTasks() {
+    this.taskService.getTasks().subscribe({
+      next: tasks => {
+        this.tasks = tasks;
+        console.log('Tasks caricate', tasks);
+      },
+      error: err => console.error('Errore caricamento tasks:', err)
+    });
+  }
+
+  async openTaskModal() {
+    const modal = await this.modalCtrl.create({
+      component: FocusSelectModalComponent,
+      componentProps: { tasks: this.tasks }
+    });
+
+    modal.onDidDismiss().then(result => {
+      if (result.data) {
+        this.selectedTask = result.data;
+        this.startTimer();
+      }
+    });
+
+    await modal.present();
+  }
+
+  // ---- TIMER ----
+  startTimer() {
+    if (!this.selectedTask || this.isRunning) return;
+
+    this.isRunning = true;
     this.intervalId = setInterval(() => {
       if (this.timerSeconds === 0) {
         if (this.timerMinutes === 0) {
-          this.stopTimer(true); // il timer è finito
+          this.onTimerCompleted();
           return;
         }
         this.timerMinutes--;
@@ -52,76 +93,61 @@ export class FocusPage implements OnDestroy {
 
   resetTimer() {
     this.pauseTimer();
-    this.timerMinutes = 25;
+    this.timerMinutes = this.INITIAL_MINUTES;
     this.timerSeconds = 0;
-    this.timerCompleted = false;
   }
 
-  stopTimer(completed: boolean = false) {
-    this.isRunning = false;
-    clearInterval(this.intervalId);
-
-    if (completed) {
-      this.timerCompleted = true;
-      this.showTimeFinishedAlert();
-      this.saveFocusMinutes(); // registra automaticamente se finisce
-      this.resetTimer();
-    }
+  private onTimerCompleted() {
+    this.pauseTimer();
+    this.saveSession(true);
+    this.showTimeFinishedAlert();
+    this.resetTimer();
   }
 
-  // alert "tempo finito"
+  private saveSession(completed: boolean) {
+    if (!this.selectedTask) return;
+
+    const minutesStudied = this.INITIAL_MINUTES - (this.timerMinutes + this.timerSeconds / 60);
+    if (minutesStudied <= 0) return;
+
+    this.taskService.addFocusSession({
+      subject: this.selectedTask.title,
+      minutes: Math.round(minutesStudied),
+      completed,
+      day: new Date()
+    }).subscribe();
+  }
+
+  // ---- ALERT ----
   async showTimeFinishedAlert() {
     const alert = await this.alertCtrl.create({
       header: 'Tempo finito!',
-      message: 'Hai completato il focus. Prenditi una pausa!',
+      message: 'Sessione completata :)',
       buttons: ['OK']
     });
     await alert.present();
   }
 
-  // Salva i minuti nelle statistiche
-  saveFocusMinutes() {
-    const totalMinutes = this.timerMinutes + this.timerSeconds / 60;
-    console.log('Minuti Focus registrati:', totalMinutes);
-
-    // Qui puoi chiamare il servizio per salvare le statistiche nel backend
-    // es: this.statsService.addFocusMinutes(totalMinutes);
-  }
-
-  // alert di conferma uscita
   async closeFocus() {
-  if (this.isRunning) {
-    const confirm = await this.alertCtrl.create({
-      header: 'Timer attivo',
-      message: 'Il timer è ancora attivo. Vuoi davvero uscire?',
-      buttons: [
-        { text: 'Annulla', role: 'cancel' },
-        { 
-          text: 'Esci', 
-          role: 'destructive',
-          handler: () => {
-            this.pauseTimer();
-
-            // invio minuti al backend
-            const minutesStudied = 25 - this.timerMinutes + (60 - this.timerSeconds) / 60;
-            this.taskService.addFocusSession({
-              subject: 'MateriaX', // puoi renderlo dinamico
-              minutes: minutesStudied,
-              completed: true
-            }).subscribe();
-
-            this.router.navigate(['/planner']);
+    if (this.isRunning) {
+      const alert = await this.alertCtrl.create({
+        header: 'Timer attivo!',
+        message: 'Vuoi uscire e salvare i minuti fatti finora?',
+        cssClass: 'custom-alert',
+        buttons: [
+          { text: 'Annulla', role: 'cancel', cssClass: 'cancel-btn' },
+          { text: 'Esci', role: 'destructive', cssClass: 'exit-btn', handler: () => {
+              this.pauseTimer();
+              this.saveSession(false);
+              this.router.navigate(['/planner']);
+            } 
           }
-        }
-      ]
-    });
-    await confirm.present();
-  } else {
-    this.router.navigate(['/planner']);
-  }
-}
+        ]
+      });
+      await alert.present();
 
-  ngOnDestroy() {
-    clearInterval(this.intervalId);
+    } else {
+      this.router.navigate(['/planner']);
+    }
   }
 }

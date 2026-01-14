@@ -205,3 +205,38 @@ ion-footer ion-toolbar {
     height: 120px;
   }
 }
+
+.summary-boxes {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+
+  .summary-box {
+    flex: 1;
+    max-width: 140px;
+    background: #fff;
+    border-radius: 16px;
+    text-align: center;
+    padding: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    font-family: var(--font-pixel);
+
+    h2 {
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    p {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    small {
+      display: block;
+      font-size: 12px;
+      color: #829672;
+      margin-top: 2px;
+    }
+  }
+}
+

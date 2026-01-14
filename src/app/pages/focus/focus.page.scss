@@ -16,27 +16,36 @@ ion-header ion-title {
   letter-spacing: 1px;
 }
 
+ion-content {
+  --ion-background-color: trasparent;
+  background-image: linear-gradient(rgba(255,255,255,0.15), rgba(255,255,255,0.15)),
+  url('/assets/background/sfondo-focus.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
 
 .focus-wrapper {
   display: flex;
   justify-content: center;   // centra orizzontalmente
   align-items: center;  
-  padding-top: 80px;       // assicura piena altezza viewport
+  padding-top: 30px;       // assicura piena altezza viewport
 }
 
 .time-container {
   background: #ffffff;
-  padding: 32px 24px;
+  padding: 20px 24px;
   border-radius: 20px;
   text-align: center;
   width: 100%;
   max-width: 320px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
 }
 
 .focus-image {
-  width: 160px;
-  max-width: 100%;
+  width: 140px;
   margin: 0 auto 16px;
   display: block;
   opacity: 0.85;
@@ -48,7 +57,8 @@ ion-header ion-title {
   font-weight: 600;
   letter-spacing: 2px;
   color: #344c3d;
-  margin-bottom: 24px;
+  margin-top: 1px;
+  margin-bottom: 10px;
   font-family: var(--font-pixel);
   font-size: 65px;
   font-weight: lighter;
@@ -103,3 +113,25 @@ ion-header ion-title {
   box-shadow: 0 6px 15px rgba(0,0,0,0.1);
   border-radius: 14px;
 }
+
+.custom-alert {
+  --background: #fdf7f2; /* sfondo alert */
+  --color: #344c3d;      /* colore testo */
+  --border-radius: 16px;
+  --box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  font-family: var(--font-pixel);
+}
+
+/* Pulsanti */
+.custom-alert .cancel-btn {
+  --color: #d8959b;
+  --background: #fff0f2;
+  border-radius: 999px;
+}
+
+.custom-alert .exit-btn {
+  --color: #fff;
+  --background: #829672;
+  border-radius: 999px;
+}
+

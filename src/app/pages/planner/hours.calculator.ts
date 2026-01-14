@@ -29,4 +29,15 @@ export class StudyHoursCalculator {
   static calculateDayHours(tasks: Task[]): number {
     return tasks.reduce((sum, t) => sum + this.calculateTaskHours(t), 0);
   }
+
+  /**
+   * Converte le ore decimali in ore e minuti
+   * @param hoursDecimal Ore totali (decimali)
+   * @returns oggetto { hours, minutes }
+   */
+  static formatHours(hoursDecimal: number): { hours: number, minutes: number } {
+    const hours = Math.floor(hoursDecimal);
+    const minutes = Math.round((hoursDecimal - hours) * 60);
+    return { hours, minutes };
+  }
 }

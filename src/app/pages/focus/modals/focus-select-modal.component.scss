@@ -1,0 +1,167 @@
+:host {
+  color: #344c3d;
+}
+
+/* =======================
+   HEADER
+   ======================= */
+
+ion-header ion-toolbar {
+  --background: #f2d1d4;
+}
+
+ion-header ion-title {
+  font-family: var(--font-pixel);
+  font-weight: bold;
+  font-size: 22px;
+  letter-spacing: 1px;
+  text-align: center;
+  color: #344c3d;
+}
+
+ion-button.close-btn {
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  color: #344c3d;
+}
+
+ion-button.close-btn:hover {
+  color: #d8959b;
+}
+
+/* =======================
+   CONTENT
+   ======================= */
+
+ion-content {
+  --ion-background-color: trasparent;
+  background-image: linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4)),
+  url('/assets/background/background-focus-task.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  padding: 20px;
+  
+}
+
+.modal-center {
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* =======================
+   CARD
+   ======================= */
+
+.task-details-card {
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 380px;
+  padding: 22px;
+  border-radius: 16px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+/* =======================
+   ITEM & LABEL
+   ======================= */
+
+.task-details-card ion-item {
+  --background: transparent;
+  padding: 0;
+}
+
+ion-label {
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  color: #344c3d;
+  margin-bottom: 6px;
+}
+
+/* =======================
+   SELECT
+   ======================= */
+
+ion-select {
+  --background: #fdf7f2;
+  --color: #344c3d;
+  --placeholder-color: #aaa;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  height: 48px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: var(--font-pixel);
+  letter-spacing: 1px;
+}
+
+ion-select::part(text) {
+  font-family: var(--font-pixel);
+  font-size: 15px;
+  color: #344c3d;
+}
+
+ion-select-option {
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  color: #344c3d;
+  background: #fdf7f2;
+}
+
+::ng-deep ion-popover {
+  --background: #f2d1d4;
+  --border-radius: 12px;
+  --box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  overflow: hidden;
+}
+
+
+::ng-deep ion-popover .select-interface-option {
+  --background: #f2d1d4;
+  background-color: #f2d1d4;
+  font-family: var(--font-pixel);
+  letter-spacing: 1px;
+  color: #344c3d;   
+  font-size: 14px;
+}
+
+/* =======================
+   BUTTON
+   ======================= */
+
+ion-button.start {
+  --background: #829672;
+  --color: #ffffff;
+
+  font-family: var(--font-pixel);
+  letter-spacing: 2px;
+  font-size: 15px;
+
+  height: 48px;
+  border-radius: 999px;
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+ion-button.start:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+ion-button.start:active {
+  transform: scale(0.96);
+}
+
+ion-button.start[disabled] {
+  opacity: 0.5;
+  box-shadow: none;
+  transform: none;
+}

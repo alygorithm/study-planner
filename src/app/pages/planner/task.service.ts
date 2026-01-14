@@ -8,6 +8,7 @@ export interface FocusSession {
   minutes: number;
   completed: boolean;
   day?: Date;
+  taskId?: string;
 }
 
 @Injectable({

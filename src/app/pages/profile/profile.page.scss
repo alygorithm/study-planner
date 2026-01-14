@@ -3,141 +3,150 @@
   --ion-text-color: #344c3d;
 }
 
+.profile-page {
+  padding: 15px;
+}
+
 ion-header ion-toolbar {
-  --background: #f2d1d4;
-  color: #344c3d;
+  --background: #f2d1d4; /* Rosa pastello */
+  color: #344c3d;         /* Verde scuro per testo */
 }
 
 ion-header ion-title {
+  color: #344c3d;
   font-family: var(--font-pixel);
   font-size: 25px;
-  font-weight: bold;
   text-align: center;
   letter-spacing: 1px;
-  color: #344c3d;
+  font-weight: bold;
 }
 
-ion-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start; /* parte dall’alto, ma card centrata con margin-top */
-  min-height: 100vh;
-  padding: 20px;
-  padding-top: 40px;
-  gap: 40px;
-  box-sizing: border-box;
-}
-
-/* ===========================
-   CARD PROFILO
-=========================== */
+/* CARD PROFILO */
 .profile-card {
-  background-color: #f2d1d4;
-  border-radius: 12px;
-  padding: 30px;
   text-align: center;
-  width: 100%;
-  max-width: 400px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  margin: 0 auto; /* centrata orizzontalmente */
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  background-color: #f2d1d4;
 }
 
 .profile-card .avatar {
-  font-size: 100px;
-  color: #344c3d;
-  margin-bottom: 10px;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 10px auto;
+  ion-icon {
+    font-size: 80px;
+  }
 }
 
 .profile-card ion-card-title {
   font-family: var(--font-pixel);
-  color: #344c3d;
-  font-size: 26px;
-  font-weight: bold;
-  margin: 5px 0;
-}
-
-.profile-card ion-card-subtitle {
-  font-family: var(--font-pixel);
-  font-size: 16px;
-  color: #466652;
-}
-
-/* ===========================
-   STATS
-=========================== */
-.profile-stats {
-  display: flex;               /* Flex per centrare */
-  flex-wrap: wrap;             /* Va a capo su schermi piccoli */
-  justify-content: center;     /* Centrato orizzontalmente */
-  gap: 20px;                   /* Spazio tra le card */
-  width: 100%;
-  max-width: 1000px;           /* Contenitore massimo */
-  margin-bottom: 30px;
-}
-
-.stat-card {
-  background-color: #f2d1d4;   /* stesso colore della profile card */
-  border-radius: 12px;
-  text-align: center;
-  font-family: var(--font-pixel);
-  color: #344c3d;
-  padding: 20px;
-  flex: 1 1 150px;             /* flessibile con min width */
-  max-width: 220px;            /* dimensione massima */
-  min-height: 120px;           /* altezza uniforme */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  transition: all 0.2s ease;
-}
-
-.stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.stat-card ion-card-title {
   font-size: 22px;
   font-weight: bold;
   color: #344c3d;
 }
 
-.stat-card ion-card-subtitle {
-  font-size: 14px;
-  font-weight: normal;
-  color: #466652;
+.profile-card ion-card-subtitle {
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  color: #666;
 }
 
-/* ===========================
-   PULSANTI AZIONE
-=========================== */
+/* STATS */
+.profile-stats {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  .stat-card {
+    flex: 1 1 120px;
+    text-align: center;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+
+    ion-card-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #344c3d;
+    }
+
+    ion-card-subtitle {
+      font-size: 14px;
+      color: #666;
+    }
+  }
+}
+
+/* AZIONI */
 .profile-actions {
   display: flex;
-  flex-direction: column;     /* uno sopra l’altro */
-  gap: 15px;                  /* spazio tra pulsanti */
-  align-items: center;        /* centrati orizzontalmente */
-  width: 100%;
-  max-width: 400px;           /* uguale alla profile card */
-  margin-bottom: 40px;        /* spazio dal footer */
+  justify-content: center;   // centra orizzontalmente
+  align-items: center;   
+  gap: 10px;
+
+  ion-button {
+    font-family: var(--font-pixel);
+    font-weight: bold;
+    border-radius: 12px;
+  }
 }
 
-.profile-actions ion-button {
-  width: 100%;                /* stesso della card */
+.profile {
+  --background: #829672;
+  color: #fff;
+  font-weight: bold;
   font-family: var(--font-pixel);
-  letter-spacing: 1px;
+  width: 75%;
+  --border-radius: 999px;
 }
+
+.profile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  border-radius: 14px;
+}
+
+.settings {
+  --background: #d8ce95;
+  color: #fff;
+  font-weight: bold;
+  font-family: var(--font-pixel);
+  width: 75%;
+  --border-radius: 999px;
+}
+
+.settings:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  border-radius: 14px;
+}
+
+.logout {
+  --background: #d8959b;
+  color: #fff;
+  font-weight: bold;
+  font-family: var(--font-pixel);
+  width: 75%;
+  --border-radius: 999px;
+}
+
+.logout:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  border-radius: 14px;
+}
+
 
 /* ===========================
    NAV BAR
 =========================== */
 ion-footer ion-toolbar {
-  --background: #ffffff;
+  --background: #fdf7f2;
   border-top: 1px solid #ccc;
 }
 
@@ -147,10 +156,11 @@ ion-footer ion-toolbar {
   font-size: 12px;
 }
 
-.tab ion-icon {
-  display: block;
-  font-size: 24px;
-  margin-bottom: 2px;
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .tab.active {
@@ -162,22 +172,14 @@ ion-footer ion-toolbar {
   font-size: 26px;
 }
 
-/* ===========================
-   MEDIA QUERIES
-=========================== */
-@media (min-width: 900px) {
-  ion-content {
-    justify-content: flex-start; /* in schermi grandi parte dall’alto */
-    padding-top: 60px;
-  }
+.logo-image {
+  width: 35px;
+  height: auto;
+  margin-bottom: 8px;
+  .tab ion-icon {
+  font-size: 24px;
+  margin-bottom: 4px;
+  color: #344c3d;
 }
 
-@media (min-width: 1200px) {
-  .profile-card {
-    max-width: 450px;
-  }
-
-  .action-btn {
-    max-width: 450px;
-  }
 }

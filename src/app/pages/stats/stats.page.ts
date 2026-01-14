@@ -3,11 +3,12 @@ import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TaskService, FocusSession } from '../planner/task.service';
+import { Task } from '../planner/task.model';
 
 interface DayStat {
   label: string;
   hours: number;
-  percentage: number; // altezza barra %
+  percentage: number;
 }
 
 @Component({
@@ -18,20 +19,31 @@ interface DayStat {
   styleUrls: ['./stats.page.scss']
 })
 export class StatsPage implements OnInit {
+
   activeTab: string = 'stats';
 
   focusSessions: FocusSession[] = [];
-  totalMinutes: number = 0;
-  todayMinutes: number = 0;
-  todayTarget: number = 50;
-  todayProgress: number = 0;
+  tasks: Task[] = [];
+
+  totalMinutes = 0;
+  todayMinutes = 0;
+  todayTarget = 50;
+  todayProgress = 0;
+
+  completedTasks = 0;
+  totalTasks = 0;
+  completionPercent = 0;
 
   weekStats: DayStat[] = [];
 
-  constructor(private router: Router, private taskService: TaskService) {}
+  constructor(
+    private router: Router,
+    private taskService: TaskService
+  ) {}
 
   ngOnInit() {
     this.loadFocusSessions();
+    this.loadTasks();
   }
 
   navigate(page: string) {
@@ -41,44 +53,62 @@ export class StatsPage implements OnInit {
 
   loadFocusSessions() {
     this.taskService.getFocusSessions().subscribe({
-      next: (sessions: FocusSession[]) => {
+      next: sessions => {
         this.focusSessions = sessions;
 
-        // Totale minuti
-        this.totalMinutes = sessions.reduce((sum, s) => sum + s.minutes, 0);
+        this.totalMinutes = sessions.reduce(
+          (sum, s) => sum + s.minutes,
+          0
+        );
 
-        // Minuti completati oggi
         const today = new Date().toDateString();
         this.todayMinutes = sessions
-          .filter(s => s.completed && new Date(s.day || '').toDateString() === today)
+          .filter(s => new Date(s.day || '').toDateString() === today)
           .reduce((sum, s) => sum + s.minutes, 0);
-        this.todayProgress = Math.min(this.todayMinutes / this.todayTarget, 1);
 
-        // Grafico settimanale
+        this.todayProgress = Math.min(
+          this.todayMinutes / this.todayTarget,
+          1
+        );
+
         this.calculateWeekStats();
       },
-      error: (err) => console.error('Errore caricamento sessioni:', err)
+      error: err => console.error('Errore statistiche:', err)
+    });
+  }
+
+  loadTasks() {
+    this.taskService.getTasks().subscribe({
+      next: tasks => {
+        this.tasks = tasks;
+        this.totalTasks = tasks.length;
+        this.completedTasks = tasks.filter(t => t.completed).length;
+        this.completionPercent = this.totalTasks
+          ? Math.round((this.completedTasks / this.totalTasks) * 100)
+          : 0;
+      },
+      error: err => console.error('Errore caricamento tasks:', err)
     });
   }
 
   private calculateWeekStats() {
     const weekDays = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
-    const todayDate = new Date();
-    const startOfWeek = new Date(todayDate);
-    startOfWeek.setDate(todayDate.getDate() - todayDate.getDay()); // domenica come inizio settimana
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay());
 
     this.weekStats = weekDays.map((label, index) => {
-      const dayDate = new Date(startOfWeek);
-      dayDate.setDate(startOfWeek.getDate() + index);
+      const day = new Date(startOfWeek);
+      day.setDate(startOfWeek.getDate() + index);
 
       const minutes = this.focusSessions
-        .filter(s => s.completed && new Date(s.day || '').toDateString() === dayDate.toDateString())
+        .filter(s => new Date(s.day || '').toDateString() === day.toDateString())
         .reduce((sum, s) => sum + s.minutes, 0);
 
       return {
         label,
         hours: +(minutes / 60).toFixed(1),
-        percentage: Math.min((minutes / 60) / 3 * 100, 100) // massimo 3h visualizzate
+        percentage: Math.min((minutes / 60) / 3 * 100, 100)
       };
     });
   }
