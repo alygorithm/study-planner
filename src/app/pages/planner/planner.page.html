@@ -9,27 +9,32 @@
   <!-- Calendario orizzontale -->
   <div class="calendar-container">
     <div class="day"
-        *ngFor="let day of days"
-        [class.today]="day.isToday"
-        [class.selected]="selectedDay && selectedDay.date.toDateString() === day.date.toDateString()"
-        (click)="selectDay(day)">
+         *ngFor="let day of days"
+         [class.today]="day.isToday"
+         [class.selected]="selectedDay && selectedDay.date.toDateString() === day.date.toDateString()"
+         (click)="selectDay(day)">
       {{ day.date | date:'EEE dd' }}
     </div>
   </div>
 
   <!-- Messaggio ore e minuti -->
-  <div class="study-load" *ngIf="selectedDay">
-    <p>{{ getTodayStudyMessage() }}</p>
+  <div class="study-load" *ngIf="getSelectedDayStudyLoad() as load">
+    <p>{{ getSelectedDayStudyMessage() }}</p>
+    <small>{{ load.tasks.length }} task contribuiscono a questo carico</small>
   </div>
 
   <!-- Task del giorno selezionato -->
   <div class="tasks-container" *ngIf="selectedDay">
     <h3>Task del {{ selectedDay.date | date:'fullDate' }}</h3>
-    <p *ngIf="!tasks[selectedDay.date.toDateString()] || tasks[selectedDay.date.toDateString()].length === 0">
+    <p *ngIf="getTasksForSelectedDay().length === 0">
       Nessuna task per questo giorno.
     </p>
 
-    <ion-item *ngFor="let task of tasks[selectedDay.date.toDateString()]" class="task-card" button (click)="openTaskDetails(task)">
+    <ion-item *ngFor="let task of getTasksForSelectedDay()"
+              class="task-card"
+              [class.completed]="task.completed"
+              button
+              (click)="openTaskDetails(task)">
       <ion-label>
         <h2>{{ task.title }}</h2>
         <p *ngIf="task.subject">

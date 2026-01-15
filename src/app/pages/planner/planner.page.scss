@@ -7,10 +7,9 @@
 }
 
 ion-content {
-  --ion-background-color: #f4f3f1;
-  --ion-background-color: trasparent;
+  --ion-background-color: transparent;
   background-image: linear-gradient(rgba(255,255,255,0.6), rgba(255,255,255,0.6)),
-  url('/assets/background/sfondo.png');
+                    url('/assets/background/sfondo.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -106,6 +105,32 @@ ion-header ion-title {
 }
 
 /* ===========================
+   STUDY LOAD MESSAGE
+=========================== */
+.study-load {
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 8px 12px;
+  background: rgba(242, 209, 212, 0.8);
+  border-radius: 10px;
+  font-family: var(--font-pixel);
+  color: #344c3d;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.study-load p {
+  margin: 0;
+  font-weight: bold;
+}
+
+.study-load small {
+  color: #344c3d;
+  opacity: 0.8;
+}
+
+/* ===========================
    TASK LIST
 =========================== */
 .tasks-container {
@@ -144,18 +169,20 @@ ion-header ion-title {
   }
 }
 
-
-/* Card singola task */
+/* ===========================
+   CARD SINGOLA TASK
+=========================== */
 .task-card {
   background-color: #f2d1d4;
   border-radius: 12px;
   margin-bottom: 12px;
   padding: 12px 15px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  position: relative;
 }
 
 .task-card:hover {
@@ -178,39 +205,28 @@ ion-header ion-title {
   color: #344c3d;
 }
 
-.task-card .task-details {
+.task-card.completed {
+  opacity: 0.5;
+  background-color: #e0e0e0;
+}
+
+.task-card.completed::after {
+  content: "COMPLETATA";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  --background: rgba(255, 255, 255, 0.8);
+  color: #444;
+  font-size: 12px;
   font-weight: bold;
-  color: #d8959b;
-  font-size: 13px;
-  margin-top: 2px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  pointer-events: none;
 }
-
-/* Assicura che ion-item dentro ion-list non interferisca */
-ion-list {
-  width: 100%;
-}
-
-ion-list ion-item {
-  border-radius: 0;
-  margin: 0;
-  padding: 0;
-  color: #344c3d;
-}
-
-ion-list ion-item ion-label {
-  color: #344c3d;
-}
-
-ion-item.task-card {
-  --background: transparent !important;
-  --ion-item-background-hover: transparent !important;
-  --border-color: transparent;
-  --border-style: none;
-}
-
 
 /* ===========================
-   PULSANTE “AGGIUNGI TASK”
+   PULSANTE AGGIUNGI TASK
 =========================== */
 ion-button.add-task-btn {
   --background: #d8959b;
@@ -222,7 +238,7 @@ ion-button.add-task-btn {
 }
 
 ion-button.add-task-btn::part(native) {
-    border-radius: 999px;
+  border-radius: 999px;
 }
 
 /* ===========================
@@ -234,6 +250,8 @@ ion-footer ion-toolbar {
 }
 
 .tab {
+  font-family: var(--font-pixel);
+  letter-spacing: 1px;
   text-align: center;
   color: #666;
   font-size: 12px;
@@ -251,18 +269,8 @@ ion-footer ion-toolbar {
   font-weight: bold;
 }
 
-.tab.active ion-icon {
-  font-size: 26px;
-}
-
 .logo-image {
   width: 35px;
   height: auto;
   margin-bottom: 8px;
-  .tab ion-icon {
-  font-size: 24px;
-  margin-bottom: 4px;
-  color: #344c3d;
-}
-
 }

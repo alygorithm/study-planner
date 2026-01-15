@@ -2,57 +2,66 @@ import { Task } from "./task.model";
 import { StudyHoursCalculator } from "./hours.calculator";
 
 export interface DailyStudyLoad {
+  date: Date;
   hours: number;
+  minutes: number;
   tasks: Task[];
 }
 
 export class StudyLoadCalculator {
 
+  private static MAX_HOURS_PER_DAY = 4;
+
   /**
-   * Calcola il carico di studio per un giorno specifico.
-   * Distribuisce le ore delle task dei giorni futuri tra i giorni precedenti.
+   * Distribuisce le ore di studio sulle giornate disponibili
    */
-  static calculateLoadForDay(
-    allTasks: { [key: string]: Task[] },
-    targetDay: Date
-  ): DailyStudyLoad {
+  static distributeLoad(
+    tasks: Task[],
+    days: Date[]
+  ): { [key: string]: DailyStudyLoad } {
 
-    let totalHours = 0;
-    const contributingTasks: Task[] = [];
+    const loadMap: { [key: string]: DailyStudyLoad } = {};
 
-    const today = new Date();
-    today.setHours(0,0,0,0);
-    targetDay.setHours(0,0,0,0);
+    // inizializza i giorni
+    days.forEach(day => {
+      loadMap[day.toDateString()] = {
+        date: day,
+        hours: 0,
+        minutes: 0,
+        tasks: []
+      };
+    });
 
-    for (const dayKey in allTasks) {
-      const dayTasks = allTasks[dayKey];
-      for (const task of dayTasks) {
-        const taskDay = new Date(task.day);
-        taskDay.setHours(0,0,0,0);
+    // task ordinate per scadenza
+    const sortedTasks = [...tasks].sort(
+      (a, b) => new Date(a.day).getTime() - new Date(b.day).getTime()
+    );
 
-        // Ignora task già passate
-        if (taskDay < targetDay) continue;
+    for (const task of sortedTasks) {
 
-        const weightedHours = StudyHoursCalculator.calculateTaskHours(task);
+      let remainingHours = StudyHoursCalculator.calculateTaskHours(task);
 
-        // Numero di giorni disponibili: da oggi al giorno della task
-        const daysUntilTask = Math.ceil((taskDay.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-        const distributionDays = Math.max(daysUntilTask, 1); // almeno 1 giorno
+      for (const day of days) {
+        const key = day.toDateString();
+        const load = loadMap[key];
 
-        const dailyShare = weightedHours / distributionDays;
+        const currentLoad = load.hours + load.minutes / 60;
+        if (currentLoad >= this.MAX_HOURS_PER_DAY) continue;
 
-        // Controlla se targetDay rientra nella distribuzione
-        const dayIndexFromToday = Math.ceil((targetDay.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-        if (dayIndexFromToday <= distributionDays) {
-          totalHours += dailyShare;
-          contributingTasks.push(task);
-        }
+        const available = this.MAX_HOURS_PER_DAY - currentLoad;
+        const assigned = Math.min(available, remainingHours);
+
+        const formatted = StudyHoursCalculator.formatHours(assigned);
+
+        load.hours += formatted.hours;
+        load.minutes += formatted.minutes;
+        load.tasks.push(task);
+
+        remainingHours -= assigned;
+        if (remainingHours <= 0) break;
       }
     }
 
-    return {
-      hours: Math.round(totalHours * 10) / 10, // arrotondato a 1 decimale
-      tasks: contributingTasks
-    };
+    return loadMap;
   }
 }
