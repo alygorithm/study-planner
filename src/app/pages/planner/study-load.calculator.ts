@@ -10,7 +10,7 @@ export interface DailyStudyLoad {
 
 export class StudyLoadCalculator {
 
-  private static MAX_MINUTES_PER_DAY = 4 * 60; // 4 ore
+  private static MAX_HOURS_PER_DAY = 4;
 
   static distributeLoad(
     tasks: Task[],
@@ -19,7 +19,6 @@ export class StudyLoadCalculator {
 
     const loadMap: { [key: string]: DailyStudyLoad } = {};
 
-    // inizializza i giorni
     days.forEach(day => {
       loadMap[day.toDateString()] = {
         date: day,
@@ -29,33 +28,36 @@ export class StudyLoadCalculator {
       };
     });
 
-    // task ordinate per scadenza
     const sortedTasks = [...tasks].sort(
       (a, b) => new Date(a.day).getTime() - new Date(b.day).getTime()
     );
 
     for (const task of sortedTasks) {
 
-      let remainingMinutes = StudyHoursCalculator.calculateTaskMinutes(task);
+      let remainingHours = StudyHoursCalculator.calculateTaskHours(task);
 
-      for (const day of days) {
+      // 1) filtro giorni disponibili fino alla scadenza della task
+      const taskDeadline = new Date(task.day).toDateString();
+      const availableDays = days.filter(d => d.toDateString() <= taskDeadline);
+
+      for (const day of availableDays) {
         const key = day.toDateString();
         const load = loadMap[key];
 
-        const currentMinutes = load.hours * 60 + load.minutes;
-        if (currentMinutes >= this.MAX_MINUTES_PER_DAY) continue;
+        const currentLoad = load.hours + load.minutes / 60;
+        if (currentLoad >= this.MAX_HOURS_PER_DAY) continue;
 
-        const available = this.MAX_MINUTES_PER_DAY - currentMinutes;
-        const assigned = Math.min(available, remainingMinutes);
+        const available = this.MAX_HOURS_PER_DAY - currentLoad;
+        const assigned = Math.min(available, remainingHours);
 
-        const formatted = StudyHoursCalculator.formatMinutes(assigned);
+        const formatted = StudyHoursCalculator.formatHours(assigned);
 
         load.hours += formatted.hours;
         load.minutes += formatted.minutes;
         load.tasks.push(task);
 
-        remainingMinutes -= assigned;
-        if (remainingMinutes <= 0) break;
+        remainingHours -= assigned;
+        if (remainingHours <= 0) break;
       }
     }
 

@@ -26,12 +26,14 @@ export class StatsPage implements OnInit {
 
   tasks: Task[] = [];
 
+  totalMinutes = 0;          // totale settimana
   todayMinutes = 0;
-  todayTarget = 240; // 4h
+  todayTarget = 240;         // 4h
   todayProgress = 0;
 
   completedTasks = 0;
   totalTasks = 0;
+  completionPercent = 0;
 
   weekStats: DayStat[] = [];
 
@@ -58,10 +60,31 @@ export class StatsPage implements OnInit {
 
       this.totalTasks = this.tasks.length;
       this.completedTasks = this.tasks.filter(t => t.completed).length;
+      this.completionPercent = this.totalTasks
+        ? Math.round((this.completedTasks / this.totalTasks) * 100)
+        : 0;
 
+      this.calculateWeeklyTotal();
       this.calculateTodayProgress();
       this.calculateWeekStats();
     });
+  }
+
+  calculateWeeklyTotal() {
+    const today = new Date();
+    const start = new Date(today);
+    start.setDate(today.getDate() - today.getDay()); // inizio settimana (dom)
+
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6); // fine settimana (sab)
+
+    this.totalMinutes = this.tasks
+      .filter(t => t.completed && t.completedAt)
+      .filter(t => {
+        const d = new Date(t.completedAt!);
+        return d >= start && d <= end;
+      })
+      .reduce((sum, t) => sum + StudyHoursCalculator.calculateTaskMinutes(t), 0);
   }
 
   calculateTodayProgress() {
@@ -70,10 +93,7 @@ export class StatsPage implements OnInit {
     this.todayMinutes = this.tasks
       .filter(t => t.completed && t.completedAt)
       .filter(t => t.completedAt!.toDateString() === today)
-      .reduce(
-        (sum, t) => sum + StudyHoursCalculator.calculateTaskMinutes(t),
-        0
-      );
+      .reduce((sum, t) => sum + StudyHoursCalculator.calculateTaskMinutes(t), 0);
 
     this.todayProgress = Math.min(this.todayMinutes / this.todayTarget, 1);
   }
@@ -97,7 +117,7 @@ export class StatsPage implements OnInit {
         );
     });
 
-    const maxMinutes = Math.max(...minutesPerDay, 1);
+    const maxMinutes = Math.max(...minutesPerDay, 120); // minimo 2h per rendere grafico visibile
 
     this.weekStats = minutesPerDay.map((min, i) => ({
       label: labels[i],

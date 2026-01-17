@@ -57,21 +57,24 @@ export class PlannerPage implements OnInit {
     this.selectedDay = this.days.find(d => d.isToday)!;
   }
 
-  selectDay(day: { date: Date; isToday: boolean }) {
+  selectDay(day: any) {
     this.selectedDay = day;
   }
-
 
   // ---------------- STUDY LOAD ----------------
 
   updateStudyLoad() {
     const pendingTasks: Task[] = [];
 
-    Object.values(this.tasks).forEach((dayTasks: Task[]) => {
-      dayTasks.forEach((t: Task) => {
+    // ❌ senza flat()
+    Object.values(this.tasks).forEach(arr => {
+      arr.forEach(t => {
         if (!t.completed) pendingTasks.push(t);
       });
     });
+
+    const dates = this.days.map(d => d.date);
+    this.studyLoadMap = StudyLoadCalculator.distributeLoad(pendingTasks, dates);
   }
 
   getSelectedDayStudyLoad(): DailyStudyLoad | null {
