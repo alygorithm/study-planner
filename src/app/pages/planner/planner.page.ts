@@ -63,10 +63,11 @@ export class PlannerPage implements OnInit {
 
   // ---------------- STUDY LOAD ----------------
 
+  studyOverflow: { task: Task; missingMinutes: number }[] = [];
+
   updateStudyLoad() {
     const pendingTasks: Task[] = [];
 
-    // ❌ senza flat()
     Object.values(this.tasks).forEach(arr => {
       arr.forEach(t => {
         if (!t.completed) pendingTasks.push(t);
@@ -74,7 +75,10 @@ export class PlannerPage implements OnInit {
     });
 
     const dates = this.days.map(d => d.date);
-    this.studyLoadMap = StudyLoadCalculator.distributeLoad(pendingTasks, dates);
+    const result = StudyLoadCalculator.distributeLoad(pendingTasks, dates);
+
+    this.studyLoadMap = result.loadMap;
+    this.studyOverflow = result.overflow;
   }
 
   getSelectedDayStudyLoad(): DailyStudyLoad | null {
