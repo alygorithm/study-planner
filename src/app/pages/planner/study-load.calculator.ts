@@ -10,7 +10,7 @@ export interface DailyStudyLoad {
 
 export class StudyLoadCalculator {
 
-  private static MAX_HOURS_PER_DAY = 4;
+  private static MAX_MINUTES_PER_DAY = 240; // 4 ore
 
   static distributeLoad(
     tasks: Task[],
@@ -19,6 +19,7 @@ export class StudyLoadCalculator {
 
     const loadMap: { [key: string]: DailyStudyLoad } = {};
 
+    // inizializza i giorni
     days.forEach(day => {
       loadMap[day.toDateString()] = {
         date: day,
@@ -32,32 +33,44 @@ export class StudyLoadCalculator {
       (a, b) => new Date(a.day).getTime() - new Date(b.day).getTime()
     );
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     for (const task of sortedTasks) {
 
-      let remainingHours = StudyHoursCalculator.calculateTaskHours(task);
+      let remainingMinutes = StudyHoursCalculator.calculateTaskMinutes(task);
 
-      // 1) filtro giorni disponibili fino alla scadenza della task
-      const taskDeadline = new Date(task.day).toDateString();
-      const availableDays = days.filter(d => d.toDateString() <= taskDeadline);
+      const taskDay = new Date(task.day);
+      taskDay.setHours(0, 0, 0, 0);
+
+      // se la scadenza è passata -> assegna solo oggi
+      const endDay = taskDay < today ? today : taskDay;
+
+      // prendo solo i giorni tra oggi e la scadenza
+      const availableDays = days.filter(d => {
+        const dd = new Date(d);
+        dd.setHours(0, 0, 0, 0);
+        return dd.getTime() <= endDay.getTime();
+      });
 
       for (const day of availableDays) {
         const key = day.toDateString();
         const load = loadMap[key];
 
-        const currentLoad = load.hours + load.minutes / 60;
-        if (currentLoad >= this.MAX_HOURS_PER_DAY) continue;
+        const currentMinutes = load.hours * 60 + load.minutes;
+        if (currentMinutes >= this.MAX_MINUTES_PER_DAY) continue;
 
-        const available = this.MAX_HOURS_PER_DAY - currentLoad;
-        const assigned = Math.min(available, remainingHours);
+        const available = this.MAX_MINUTES_PER_DAY - currentMinutes;
+        const assigned = Math.min(available, remainingMinutes);
 
-        const formatted = StudyHoursCalculator.formatHours(assigned);
+        load.hours = Math.floor((currentMinutes + assigned) / 60);
+        load.minutes = (currentMinutes + assigned) % 60;
 
-        load.hours += formatted.hours;
-        load.minutes += formatted.minutes;
+        // aggiunge la task solo se contribuisce a quel giorno
         load.tasks.push(task);
 
-        remainingHours -= assigned;
-        if (remainingHours <= 0) break;
+        remainingMinutes -= assigned;
+        if (remainingMinutes <= 0) break;
       }
     }
 

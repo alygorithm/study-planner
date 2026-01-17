@@ -73,7 +73,6 @@ export class AddTaskModal {
   constructor(private modalCtrl: ModalController) {}
 
   private estimateDuration(priority: string): number {
-    // Calcolo semplice ma sensato
     switch (priority) {
       case 'alta': return 90;
       case 'media': return 60;
@@ -85,15 +84,14 @@ export class AddTaskModal {
   saveTask() {
     if (!this.taskTitle.trim()) return;
 
-    const duration = this.estimateDuration(this.taskPriority);
-
-    const newTask: Task & { day: Date } = {
+    // NON serve salvare duration nel task
+    const newTask: Task = {
       title: this.taskTitle.trim(),
       description: this.taskDescription.trim(),
       subject: this.taskSubject.trim(),
       priority: this.taskPriority,
-      duration: duration, // <-- calcolata automaticamente
-      day: this.taskDate ? new Date(this.taskDate) : this.day
+      day: this.taskDate ? new Date(this.taskDate) : this.day,
+      completed: false
     };
 
     this.modalCtrl.dismiss(newTask);

@@ -6,7 +6,6 @@ export interface Task {
   time?: string;
   subject?: string;
   priority?: string;
-  duration?: number;
   day: Date;
   completed?: boolean;
   completedAt?: Date | null;

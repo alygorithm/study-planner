@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { IonicModule, ModalController, IonButton } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { Task } from '../task.model';
 
@@ -38,9 +38,7 @@ import { Task } from '../task.model';
           <b>Priorità: </b> {{ task.priority | titlecase }}
         </p>
 
-        <p *ngIf="task.duration">
-          <b>Durata stimata: </b> {{ task.duration }} min
-        </p>
+        <!-- RIMOSSA la parte durata -->
 
         <div class="task-buttons">
           <ion-button expand="block" class="complete-btn" (click)="completeTask()"> Completa Task </ion-button>
@@ -61,7 +59,7 @@ export class TaskDetailsModal {
   completeTask() {
     if (this.isCompleting) return;
     this.isCompleting = true;
-    
+
     const card = document.querySelector('.task-details-card');
     if (card) card.classList.add('completed');
 
