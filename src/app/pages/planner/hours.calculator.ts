@@ -2,32 +2,36 @@ import { Task } from "./task.model";
 
 export class StudyHoursCalculator {
 
-  private static PRIORITY_HOURS: { [key: string]: number } = {
-    alta: 2,
-    media: 1.5,
-    bassa: 1
+  private static PRIORITY_MINUTES: { [key: string]: number } = {
+    alta: 120,
+    media: 90,
+    bassa: 60
+  };
+
+  private static SUBJECT_MULTIPLIER: { [key: string]: number } = {
+    matematica: 1.2,
+    fisica: 1.2,
+    programmazione: 1.2,
+    chimica: 1.15,
+    statistica: 1.15
   };
 
   /**
-   * Calcola le ore di studio di una task
-   * Priorità > durata manuale > default
+   * Calcola la durata in minuti di una task
    */
-  static calculateTaskHours(task: Task): number {
+  static calculateTaskMinutes(task: Task): number {
+    const priority = task.priority?.toLowerCase() ?? "media";
+    const baseMinutes = this.PRIORITY_MINUTES[priority] ?? 90;
 
-    // durata manuale ha precedenza
-    if (task.duration && task.duration > 0) {
-      return task.duration;
-    }
+    const subject = task.subject?.toLowerCase() ?? "";
+    const multiplier = this.SUBJECT_MULTIPLIER[subject] ?? 1;
 
-    if (!task.priority) return 1;
-
-    const priority = task.priority.toLowerCase();
-    return this.PRIORITY_HOURS[priority] ?? 1;
+    return Math.round(baseMinutes * multiplier);
   }
 
-  static formatHours(decimal: number): { hours: number; minutes: number } {
-    const hours = Math.floor(decimal);
-    const minutes = Math.round((decimal - hours) * 60);
+  static formatMinutes(totalMinutes: number): { hours: number; minutes: number } {
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
     return { hours, minutes };
   }
 }

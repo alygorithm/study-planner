@@ -20,7 +20,7 @@ router.post('/', async (req, res) => {
     time: req.body.time,
     subject: req.body.subject,
     priority: req.body.priority,
-    duration: req.body.duration,
+    duration: req.body.duration,  // <-- importante
     day: req.body.day,
     completedAt: req.body.completedAt
   });
@@ -32,6 +32,7 @@ router.post('/', async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+
 
 // DELETE: cancella per id
 router.delete('/:id', async (req, res) => {

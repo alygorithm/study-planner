@@ -2,8 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { TaskService, FocusSession } from '../planner/task.service';
+
+import { TaskService } from '../planner/task.service';
 import { Task } from '../planner/task.model';
+import { StudyHoursCalculator } from '../planner/hours.calculator';
 
 interface DayStat {
   label: string;
@@ -20,22 +22,16 @@ interface DayStat {
 })
 export class StatsPage implements OnInit {
 
-  activeTab: string = 'stats';
+  activeTab = 'stats';
 
-  focusSessions: FocusSession[] = [];
   tasks: Task[] = [];
 
-  totalMinutes = 0;
   todayMinutes = 0;
-  todayTarget = 50;
+  todayTarget = 240; // 4h
   todayProgress = 0;
 
   completedTasks = 0;
   totalTasks = 0;
-  completionPercent = 0;
-
-  completedMinutesTotal = 0;
-  completedMinutesToday = 0;
 
   weekStats: DayStat[] = [];
 
@@ -45,93 +41,68 @@ export class StatsPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.loadFocusSessions();
     this.loadTasks();
   }
 
   navigate(page: string) {
     this.activeTab = page;
-    this.router.navigate(['/' + page]);
-  }
-
-  loadFocusSessions() {
-    this.taskService.getFocusSessions().subscribe({
-      next: sessions => {
-        this.focusSessions = sessions;
-
-        this.totalMinutes = sessions.reduce(
-          (sum, s) => sum + s.minutes,
-          0
-        );
-
-        const today = new Date().toDateString();
-        this.todayMinutes = sessions
-          .filter(s => new Date(s.day || '').toDateString() === today)
-          .reduce((sum, s) => sum + s.minutes, 0);
-
-        this.todayProgress = Math.min(
-          this.todayMinutes / this.todayTarget,
-          1
-        );
-
-        this.calculateWeekStats();
-      },
-      error: err => console.error('Errore statistiche:', err)
-    });
+    this.router.navigate([`/${page}`]);
   }
 
   loadTasks() {
-    this.taskService.getTasks().subscribe({
-      next: tasks => {
-        this.tasks = tasks.map(t => ({
-          ...t,
-          completedAt: t.completedAt ? new Date(t.completedAt) : null
-        }));
+    this.taskService.getTasks().subscribe(tasks => {
+      this.tasks = tasks.map(t => ({
+        ...t,
+        completedAt: t.completedAt ? new Date(t.completedAt) : null
+      }));
 
-        this.totalTasks = this.tasks.length;
-        this.completedTasks = this.tasks.filter(t => t.completed).length;
-        this.completionPercent = this.totalTasks
-          ? Math.round((this.completedTasks / this.totalTasks) * 100)
-          : 0;
+      this.totalTasks = this.tasks.length;
+      this.completedTasks = this.tasks.filter(t => t.completed).length;
 
-        const today = new Date().toDateString();
-
-        this.completedMinutesTotal = this.tasks
-          .filter(t => t.completed && t.completedAt)
-          .reduce((sum, t) => sum + (t.duration || 0), 0);
-
-        this.completedMinutesToday = this.tasks
-          .filter(t => t.completed && t.completedAt)
-          .filter(t => t.completedAt && t.completedAt.toDateString() === today)
-          .reduce((sum, t) => sum + (t.duration || 0), 0);
-
-        this.calculateWeekStats();
-      },
-      error: err => console.error('Errore caricamento tasks:', err)
+      this.calculateTodayProgress();
+      this.calculateWeekStats();
     });
   }
 
+  calculateTodayProgress() {
+    const today = new Date().toDateString();
 
-  private calculateWeekStats() {
-    const weekDays = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
+    this.todayMinutes = this.tasks
+      .filter(t => t.completed && t.completedAt)
+      .filter(t => t.completedAt!.toDateString() === today)
+      .reduce(
+        (sum, t) => sum + StudyHoursCalculator.calculateTaskMinutes(t),
+        0
+      );
+
+    this.todayProgress = Math.min(this.todayMinutes / this.todayTarget, 1);
+  }
+
+  calculateWeekStats() {
+    const labels = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
     const today = new Date();
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay());
+    const start = new Date(today);
+    start.setDate(today.getDate() - today.getDay());
 
-    this.weekStats = weekDays.map((label, index) => {
-      const day = new Date(startOfWeek);
-      day.setDate(startOfWeek.getDate() + index);
+    const minutesPerDay = labels.map((_, i) => {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
 
-      const minutes = this.tasks
+      return this.tasks
         .filter(t => t.completed && t.completedAt)
-        .filter(t => t.completedAt && t.completedAt.toDateString() === day.toDateString())
-        .reduce((sum, t) => sum + (t.duration || 0), 0);
-
-      return {
-        label,
-        hours: +(minutes / 60).toFixed(1),
-        percentage: Math.min((minutes / 60) / 3 * 100, 100)
-      };
+        .filter(t => t.completedAt!.toDateString() === d.toDateString())
+        .reduce(
+          (sum, t) => sum + StudyHoursCalculator.calculateTaskMinutes(t),
+          0
+        );
     });
+
+    const maxMinutes = Math.max(...minutesPerDay, 1);
+
+    this.weekStats = minutesPerDay.map((min, i) => ({
+      label: labels[i],
+      hours: +(min / 60).toFixed(1),
+      percentage: (min / maxMinutes) * 100
+    }));
   }
 }

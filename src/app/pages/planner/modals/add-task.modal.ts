@@ -9,7 +9,6 @@ import { Task } from '../task.model';
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule],
   template: `
-
     <ion-header>
       <ion-toolbar>
         <ion-title><b>Aggiungi Task</b></ion-title>
@@ -55,12 +54,6 @@ import { Task } from '../task.model';
         </ion-select>
       </ion-item>
 
-      <!-- Durata stimata -->
-      <ion-item>
-        <ion-label position="stacked">Durata stimata (min)</ion-label>
-        <ion-input type="number" [(ngModel)]="taskDuration"></ion-input>
-      </ion-item>
-
       <!-- Pulsante Salva -->
       <ion-button expand="full" class="save-btn" (click)="saveTask()">Salva</ion-button>
     </ion-content>
@@ -69,29 +62,37 @@ import { Task } from '../task.model';
 })
 export class AddTaskModal {
 
-  @Input() day!: Date;  // giorno selezionato nel planner
+  @Input() day!: Date;
 
-  taskDate: string = '';       // data scelta dall’utente
+  taskDate: string = '';
   taskTitle = '';
   taskDescription = '';
-  taskTime = '';
   taskSubject = '';
   taskPriority = 'media';
-  taskDuration?: number;
 
   constructor(private modalCtrl: ModalController) {}
+
+  private estimateDuration(priority: string): number {
+    // Calcolo semplice ma sensato
+    switch (priority) {
+      case 'alta': return 90;
+      case 'media': return 60;
+      case 'bassa': return 30;
+      default: return 60;
+    }
+  }
 
   saveTask() {
     if (!this.taskTitle.trim()) return;
 
-    // Salva la task usando la data scelta, altrimenti usa il giorno passato dal planner
+    const duration = this.estimateDuration(this.taskPriority);
+
     const newTask: Task & { day: Date } = {
       title: this.taskTitle.trim(),
       description: this.taskDescription.trim(),
-      time: this.taskTime,
       subject: this.taskSubject.trim(),
       priority: this.taskPriority,
-      duration: this.taskDuration,
+      duration: duration, // <-- calcolata automaticamente
       day: this.taskDate ? new Date(this.taskDate) : this.day
     };
 

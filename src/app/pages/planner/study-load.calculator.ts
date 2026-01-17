@@ -10,11 +10,8 @@ export interface DailyStudyLoad {
 
 export class StudyLoadCalculator {
 
-  private static MAX_HOURS_PER_DAY = 4;
+  private static MAX_MINUTES_PER_DAY = 4 * 60; // 4 ore
 
-  /**
-   * Distribuisce le ore di studio sulle giornate disponibili
-   */
   static distributeLoad(
     tasks: Task[],
     days: Date[]
@@ -39,26 +36,26 @@ export class StudyLoadCalculator {
 
     for (const task of sortedTasks) {
 
-      let remainingHours = StudyHoursCalculator.calculateTaskHours(task);
+      let remainingMinutes = StudyHoursCalculator.calculateTaskMinutes(task);
 
       for (const day of days) {
         const key = day.toDateString();
         const load = loadMap[key];
 
-        const currentLoad = load.hours + load.minutes / 60;
-        if (currentLoad >= this.MAX_HOURS_PER_DAY) continue;
+        const currentMinutes = load.hours * 60 + load.minutes;
+        if (currentMinutes >= this.MAX_MINUTES_PER_DAY) continue;
 
-        const available = this.MAX_HOURS_PER_DAY - currentLoad;
-        const assigned = Math.min(available, remainingHours);
+        const available = this.MAX_MINUTES_PER_DAY - currentMinutes;
+        const assigned = Math.min(available, remainingMinutes);
 
-        const formatted = StudyHoursCalculator.formatHours(assigned);
+        const formatted = StudyHoursCalculator.formatMinutes(assigned);
 
         load.hours += formatted.hours;
         load.minutes += formatted.minutes;
         load.tasks.push(task);
 
-        remainingHours -= assigned;
-        if (remainingHours <= 0) break;
+        remainingMinutes -= assigned;
+        if (remainingMinutes <= 0) break;
       }
     }
 
