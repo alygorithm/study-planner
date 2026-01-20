@@ -3,10 +3,11 @@ import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
-import { TaskService } from '../planner/task.service';
+import { TaskService, FocusSession } from '../planner/task.service';
 import { Task } from '../planner/task.model';
 import { StudyHoursCalculator } from '../planner/hours.calculator';
 
+// Interfaccia per le statistiche settimanali
 interface DayStat {
   label: string;
   hours: number;
@@ -22,18 +23,29 @@ interface DayStat {
 })
 export class StatsPage implements OnInit {
 
+  // Tab attiva nella navigazione
   activeTab = 'stats';
 
   tasks: Task[] = [];
+  focusSessions: FocusSession[] = [];
 
+  // Statistiche giornaliere
   todayMinutes = 0;
   todayTarget = 240; // 4h
   todayProgress = 0;
 
+  // Statistiche task
   completedTasks = 0;
   totalTasks = 0;
 
+  // Statistiche settimanali
   weekStats: DayStat[] = [];
+
+  // Statistiche focus
+  focusTotalSessions = 0;
+  focusTotalMinutes = 0;
+  focusAvgMinutes = 0;
+  focusLastSessions: FocusSession[] = [];
 
   constructor(
     private router: Router,
@@ -42,13 +54,16 @@ export class StatsPage implements OnInit {
 
   ngOnInit() {
     this.loadTasks();
+    this.loadFocusSessions();
   }
 
+  // Navigazione tra le sezioni dell'app
   navigate(page: string) {
     this.activeTab = page;
     this.router.navigate([`/${page}`]);
   }
 
+  // Recupera le task e calcola le statistiche correlate
   loadTasks() {
     this.taskService.getTasks().subscribe(tasks => {
       this.tasks = tasks.map(t => ({
@@ -64,6 +79,22 @@ export class StatsPage implements OnInit {
     });
   }
 
+  // Recupera le sessioni di studio (focus)
+  loadFocusSessions() {
+    this.taskService.getFocusSessions().subscribe(sessions => {
+      this.focusSessions = sessions;
+
+      this.focusTotalSessions = sessions.length;
+      this.focusTotalMinutes = sessions.reduce((sum, s) => sum + s.minutes, 0);
+      this.focusAvgMinutes = sessions.length ? Math.round(this.focusTotalMinutes / sessions.length) : 0;
+
+      this.focusLastSessions = [...sessions]
+        .sort((a, b) => new Date(b.day!).getTime() - new Date(a.day!).getTime())
+        .slice(0, 3);
+    });
+  }
+
+  // Calcola il progresso di studio della giornata corrente
   calculateTodayProgress() {
     const today = new Date().toDateString();
 
@@ -78,6 +109,7 @@ export class StatsPage implements OnInit {
     this.todayProgress = Math.min(this.todayMinutes / this.todayTarget, 1);
   }
 
+  // Calcola le statistiche settimanali di studio
   calculateWeekStats() {
     const labels = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
     const today = new Date();

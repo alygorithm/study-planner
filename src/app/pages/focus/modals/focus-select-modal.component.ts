@@ -17,10 +17,12 @@ export class FocusSelectModalComponent {
 
   constructor(private modalCtrl: ModalController) {}
 
+  // Conferma la selezione e chiude il modal restituendo il task selezionato
   confirm() {
     this.modalCtrl.dismiss(this.selectedTask);
   }
 
+  // Chiude il modal senza restituire nulla
   close() {
     this.modalCtrl.dismiss();
   }

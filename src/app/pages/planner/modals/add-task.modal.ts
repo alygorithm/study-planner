@@ -62,7 +62,7 @@ import { Task } from '../task.model';
 })
 export class AddTaskModal {
 
-  @Input() day!: Date;
+  @Input() day!: string;
 
   taskDate: string = '';
   taskTitle = '';
@@ -73,7 +73,6 @@ export class AddTaskModal {
   constructor(private modalCtrl: ModalController) {}
 
   private estimateDuration(priority: string): number {
-    // Calcolo semplice ma sensato
     switch (priority) {
       case 'alta': return 90;
       case 'media': return 60;
@@ -87,13 +86,13 @@ export class AddTaskModal {
 
     const duration = this.estimateDuration(this.taskPriority);
 
-    const newTask: Task & { day: Date } = {
+    const newTask: Task = {
       title: this.taskTitle.trim(),
       description: this.taskDescription.trim(),
       subject: this.taskSubject.trim(),
       priority: this.taskPriority,
-      duration: duration, // <-- calcolata automaticamente
-      day: this.taskDate ? new Date(this.taskDate) : this.day
+      duration: duration,
+      day: this.taskDate ? new Date(this.taskDate).toISOString() : this.day
     };
 
     this.modalCtrl.dismiss(newTask);

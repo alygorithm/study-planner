@@ -6,42 +6,77 @@
 
 <ion-content class="profile-page">
 
-  <!-- CARD PROFILO -->
-  <ion-card class="profile-card">
-    <ion-avatar class="avatar">
-      <ion-icon name="person-circle-outline"></ion-icon>
-    </ion-avatar>
-    <ion-card-title>{{ user.name }}</ion-card-title>
-    <ion-card-subtitle>{{ user.email }}</ion-card-subtitle>
+  <!-- HEADER PROFILO -->
+  <div class="profile-header">
+    <div class="avatar-wrap">
+      <ion-avatar class="avatar">
+        <img src="assets/icon/profiloF.png">
+      </ion-avatar>
+    </div>
+
+    <div class="user-info">
+      <h2>{{ user.name }}</h2>
+      <p>{{ user.email }}</p>
+    </div>
+  </div>
+
+  <!-- BOX OBIETTIVI -->
+  <ion-card class="goal-card">
+    <ion-card-header>
+      <ion-card-title>Obiettivi</ion-card-title>
+      <ion-card-subtitle>Stabilisci un target e raggiungilo</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <div class="goal-row">
+        <div class="goal-text">
+          <span>Ore di studio / settimana</span>
+          <strong>{{ stats.studyHours }}h</strong>
+        </div>
+        <div class="goal-progress">
+          <div class="progress">
+            <div class="progress-fill" [style.width.%]="stats.completionPercent"></div>
+          </div>
+          <span class="percent">{{ stats.completionPercent }}%</span>
+        </div>
+      </div>
+    </ion-card-content>
   </ion-card>
 
-  <!-- STATS -->
-  <div class="profile-stats">
-    <ion-card class="stat-card">
-      <ion-card-header>
-        <ion-card-subtitle>Task completate</ion-card-subtitle>
-        <ion-card-title>{{ stats.completedTasks }}</ion-card-title>
-      </ion-card-header>
-    </ion-card>
+  <!-- SESSIONI FOCUS -->
+  <ion-card class="focus-card">
+    <ion-card-header>
+      <ion-card-title>Sessioni Focus</ion-card-title>
+      <ion-card-subtitle>Ultime 5</ion-card-subtitle>
+    </ion-card-header>
 
-    <ion-card class="stat-card">
-      <ion-card-header>
-        <ion-card-subtitle>Ore di studio</ion-card-subtitle>
-        <ion-card-title>{{ stats.studyHours }}</ion-card-title>
-      </ion-card-header>
-    </ion-card>
+    <ion-card-content>
 
-    <ion-card class="stat-card">
-      <ion-card-header>
-        <ion-card-subtitle>Percentuale completamento</ion-card-subtitle>
-        <ion-card-title>{{ stats.completionPercent }}%</ion-card-title>
-      </ion-card-header>
-    </ion-card>
-  </div>
+      <ion-spinner *ngIf="isLoadingSessions"></ion-spinner>
+
+      <ion-list *ngIf="!isLoadingSessions && sessions.length > 0">
+        <ion-item *ngFor="let s of sessions | slice:0:5">
+          <ion-label>
+            <h3>{{ s.subject }}</h3>
+            <p>{{ s.minutes }} min - {{ s.completed ? 'Completata' : 'Interrotta' }}</p>
+            <p class="date">{{ s.day | date:'dd/MM/yyyy HH:mm' }}</p>
+          </ion-label>
+          <ion-badge [color]="s.completed ? 'success' : 'warning'">
+            {{ s.completed ? 'OK' : 'STOP' }}
+          </ion-badge>
+        </ion-item>
+      </ion-list>
+
+      <div *ngIf="!isLoadingSessions && sessions.length === 0" class="empty">
+        Nessuna sessione ancora salvata.
+      </div>
+
+    </ion-card-content>
+  </ion-card>
 
   <!-- AZIONI -->
   <div class="profile-actions">
-    <ion-button class="profile"expand="block">Modifica Profilo</ion-button>
+    <ion-button class="profile" expand="block">Modifica Profilo</ion-button>
     <ion-button class="settings" expand="block">Impostazioni</ion-button>
     <ion-button class="logout" expand="block">Logout</ion-button>
   </div>

@@ -3,6 +3,8 @@
     color: #344c3d;
 }
 
+
+// Header
 ion-header ion-toolbar {
     --background: #f2d1d4;
     color: #344c3d;
@@ -19,6 +21,8 @@ ion-header ion-title {
   transform: translate(-50%, -50%);
 }
 
+
+// Button
 ion-button.close-btn {
   font-size: 20px;
   height: 100%;
@@ -31,6 +35,8 @@ ion-button.close-btn:hover {
     color: #d8959b;
 }
 
+
+// Content
 ion-content {
     --background: #f4f3f1;
     padding: 15px;

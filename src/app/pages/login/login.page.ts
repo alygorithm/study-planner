@@ -16,6 +16,7 @@ export class LoginPage {
 
   constructor(private router: Router) {}
 
+  // Esegue un login "simulato": se email e password sono presenti, naviga al planner
   login() {
     if(this.email && this.password) {
       console.log('Login effettuato con: ', this.email, this.password);

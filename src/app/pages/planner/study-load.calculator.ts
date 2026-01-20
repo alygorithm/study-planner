@@ -11,8 +11,14 @@ export interface DailyStudyLoad {
 
 export class StudyLoadCalculator {
 
-  private static MAX_MINUTES_PER_DAY = 240; // 4 ore
-  private static MIN_MINUTES_PER_DAY = 30;  // minimo realistico per giorno
+  private static MAX_MINUTES_PER_DAY = 240;
+  private static MIN_MINUTES_PER_DAY = 30;
+
+  private static toLocalDate(dateStr: string): Date {
+    const d = new Date(dateStr);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
 
   static distributeLoad(
     tasks: Task[],
@@ -23,8 +29,10 @@ export class StudyLoadCalculator {
     const overflow: { task: Task; missingMinutes: number }[] = [];
 
     days.forEach(day => {
-      loadMap[day.toDateString()] = {
-        date: day,
+      const d = new Date(day);
+      d.setHours(0,0,0,0);
+      loadMap[d.toDateString()] = {
+        date: d,
         hours: 0,
         minutes: 0,
         tasks: [],
@@ -32,43 +40,34 @@ export class StudyLoadCalculator {
       };
     });
 
-    // ordina per scadenza più vicina
     const sortedTasks = [...tasks].sort(
-      (a, b) => new Date(a.day).getTime() - new Date(b.day).getTime()
+      (a, b) => this.toLocalDate(a.day).getTime() - this.toLocalDate(b.day).getTime()
     );
 
     for (const task of sortedTasks) {
       const totalMinutes = StudyHoursCalculator.calculateTaskMinutes(task);
 
-      const taskDeadline = new Date(task.day);
+      const deadline = this.toLocalDate(task.day);
       const today = new Date();
       today.setHours(0,0,0,0);
 
-      const deadline = new Date(taskDeadline);
-      deadline.setHours(0,0,0,0);
-
-      // giorni disponibili fino alla scadenza
-      const daysAvailable = Math.max(1, Math.ceil((deadline.getTime() - today.getTime()) / (1000*60*60*24)) + 1);
-
-      // se la scadenza è fuori dal range dei giorni, usa solo i giorni disponibili nel calendario
-      const relevantDays = days.filter(d => d.getTime() <= deadline.getTime());
+      const relevantDays = days
+        .map(d => this.toLocalDate(d.toISOString()))
+        .filter(d => d.getTime() <= deadline.getTime())
+        .sort((a,b) => b.getTime() - a.getTime());
 
       if (relevantDays.length === 0) {
         overflow.push({ task, missingMinutes: totalMinutes });
         continue;
       }
 
-      // Distribuzione base: minuti per giorno
       const baseMinutes = Math.floor(totalMinutes / relevantDays.length);
       const remainder = totalMinutes % relevantDays.length;
 
       let remaining = totalMinutes;
 
-      // assegna prima ai giorni più vicini alla scadenza (reverse)
-      const sortedRelevant = [...relevantDays].sort((a,b) => b.getTime() - a.getTime());
-
-      for (let i = 0; i < sortedRelevant.length; i++) {
-        const day = sortedRelevant[i];
+      for (let i = 0; i < relevantDays.length; i++) {
+        const day = relevantDays[i];
         const key = day.toDateString();
         const load = loadMap[key];
 
@@ -76,17 +75,18 @@ export class StudyLoadCalculator {
         if (currentMinutes >= this.MAX_MINUTES_PER_DAY) continue;
 
         let assign = baseMinutes + (i < remainder ? 1 : 0);
-
-        // evita assegnazioni ridicole
         if (assign < this.MIN_MINUTES_PER_DAY) assign = this.MIN_MINUTES_PER_DAY;
 
         const available = this.MAX_MINUTES_PER_DAY - currentMinutes;
         const finalAssign = Math.min(available, assign);
 
+        if (finalAssign <= 0) continue;
+
         load.assignedMinutes += finalAssign;
         load.hours = Math.floor(load.assignedMinutes / 60);
         load.minutes = load.assignedMinutes % 60;
 
+        // Aggiungi la task solo se ha minuti assegnati a questo giorno
         load.tasks.push(task);
 
         remaining -= finalAssign;

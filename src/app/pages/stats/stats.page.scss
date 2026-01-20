@@ -123,36 +123,98 @@ ion-header ion-title {
     }
   }
 
-  /* Lista Focus completati */
-  .focus-list {
+  /* ===========================
+     FOCUS SESSIONS
+  ========================= */
+  .focus-section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
     h2 {
       font-family: var(--font-pixel);
-      margin-bottom: 12px;
-      text-align: center;
-    }
-
-    .session-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #fff;
-      border-radius: 14px;
-      padding: 8px 12px;
       margin-bottom: 8px;
-      font-family: var(--font-pixel);
-      box-shadow: 0 6px 15px rgba(0,0,0,0.05);
-    }
-
-    .session-time {
-      font-weight: bold;
-    }
-
-    .session-subject {
-      flex: 1;
       text-align: center;
+    }
+
+    .focus-summary {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+
+      .focus-card {
+        flex: 1;
+        max-width: 140px;
+        background: #fff;
+        border-radius: 16px;
+        text-align: center;
+        padding: 14px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        font-family: var(--font-pixel);
+
+        h3 {
+          font-size: 14px;
+          margin-bottom: 6px;
+        }
+
+        p {
+          font-size: 18px;
+          font-weight: bold;
+        }
+      }
+    }
+
+    .focus-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      h3 {
+        font-family: var(--font-pixel);
+        text-align: center;
+        margin: 0;
+      }
+
+      .focus-empty {
+        text-align: center;
+        font-family: var(--font-pixel);
+        color: #666;
+      }
+
+      .focus-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fff;
+        border-radius: 14px;
+        padding: 10px 12px;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+        font-family: var(--font-pixel);
+
+        .focus-row-left {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+
+          .focus-subject {
+            font-weight: bold;
+          }
+
+          .focus-date {
+            font-size: 12px;
+            color: #666;
+          }
+        }
+
+        .focus-row-right {
+          font-weight: bold;
+        }
+      }
     }
   }
 }
+
+
 
 /* ===========================
    NAV BAR / TAB FOOTER
@@ -208,37 +270,25 @@ ion-footer ion-toolbar {
   }
 }
 
-.summary-boxes {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
+/* ===========================
+   SCROLLBAR (uguale a profile page)
+=========================== */
+ion-content {
+  overflow: auto;
 
-  .summary-box {
-    flex: 1;
-    max-width: 140px;
-    background: #fff;
-    border-radius: 16px;
-    text-align: center;
-    padding: 16px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-    font-family: var(--font-pixel);
-
-    h2 {
-      font-size: 14px;
-      margin-bottom: 8px;
-    }
-
-    p {
-      font-size: 20px;
-      font-weight: bold;
-    }
-
-    small {
-      display: block;
-      font-size: 12px;
-      color: #829672;
-      margin-top: 2px;
-    }
+  &::-webkit-scrollbar {
+    width: 8px;
   }
-}
 
+  &::-webkit-scrollbar-thumb {
+    background: #d8959b;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  scrollbar-width: thin;
+  scrollbar-color: #d8959b transparent;
+}

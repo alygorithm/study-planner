@@ -15,6 +15,7 @@ import { FocusSelectModalComponent } from './modals/focus-select-modal.component
 })
 export class FocusPage implements OnInit, OnDestroy {
 
+  // Durata iniziale del timer (Pomodoro classico)
   readonly INITIAL_MINUTES = 25;
 
   timerMinutes: number = this.INITIAL_MINUTES;
@@ -24,6 +25,9 @@ export class FocusPage implements OnInit, OnDestroy {
 
   tasks: Task[] = [];
   selectedTask: Task | null = null;
+
+  // Contatore reale dei secondi trascorsi (serve per evitare errori quando si mette in pausa)
+  elapsedSeconds: number = 0;
 
   constructor(
     private router: Router,
@@ -40,17 +44,17 @@ export class FocusPage implements OnInit, OnDestroy {
     clearInterval(this.intervalId);
   }
 
-  // ---- TASK ----
+  // Carica le tasks dal backend
   loadTasks() {
     this.taskService.getTasks().subscribe({
       next: tasks => {
         this.tasks = tasks;
-        console.log('Tasks caricate', tasks);
       },
       error: err => console.error('Errore caricamento tasks:', err)
     });
   }
 
+  // Apre il modal per selezionare una task su cui lavorare
   async openTaskModal() {
     const modal = await this.modalCtrl.create({
       component: FocusSelectModalComponent,
@@ -72,16 +76,20 @@ export class FocusPage implements OnInit, OnDestroy {
     if (!this.selectedTask || this.isRunning) return;
 
     this.isRunning = true;
+
+    // Parte un timer reale (countdown basato su elapsedSeconds)
     this.intervalId = setInterval(() => {
-      if (this.timerSeconds === 0) {
-        if (this.timerMinutes === 0) {
-          this.onTimerCompleted();
-          return;
-        }
-        this.timerMinutes--;
-        this.timerSeconds = 59;
-      } else {
-        this.timerSeconds--;
+      this.elapsedSeconds++;
+
+      const totalSeconds = this.INITIAL_MINUTES * 60;
+      const remainingSeconds = Math.max(0, totalSeconds - this.elapsedSeconds);
+
+      this.timerMinutes = Math.floor(remainingSeconds / 60);
+      this.timerSeconds = remainingSeconds % 60;
+
+      // Se il timer finisce, esegue la logica di completamento
+      if (remainingSeconds === 0) {
+        this.onTimerCompleted();
       }
     }, 1000);
   }
@@ -95,6 +103,7 @@ export class FocusPage implements OnInit, OnDestroy {
     this.pauseTimer();
     this.timerMinutes = this.INITIAL_MINUTES;
     this.timerSeconds = 0;
+    this.elapsedSeconds = 0;
   }
 
   private onTimerCompleted() {
@@ -104,21 +113,28 @@ export class FocusPage implements OnInit, OnDestroy {
     this.resetTimer();
   }
 
+  // Salva la sessione di studio nel backend
   private saveSession(completed: boolean) {
     if (!this.selectedTask) return;
 
-    const minutesStudied = this.INITIAL_MINUTES - (this.timerMinutes + this.timerSeconds / 60);
-    if (minutesStudied <= 0) return;
+    // Calcola i minuti reali studiati
+    const minutesStudied = Math.round(this.elapsedSeconds / 60);
+
+    /* IMPORTANTE:
+       Salva la sessione SOLO se l'utente ha studiato almeno 5 minuti
+       (evita salvataggi accidentali se si apre e chiude subito il timer) */
+    if (minutesStudied < 5) return;
 
     this.taskService.addFocusSession({
-      subject: this.selectedTask.title,
-      minutes: Math.round(minutesStudied),
+      subject: this.selectedTask.subject || this.selectedTask.title,
+      taskId: this.selectedTask._id,
+      minutes: minutesStudied,
       completed,
-      day: new Date()
+      day: new Date().toISOString() // <-- day come stringa ISO
     }).subscribe();
   }
 
-  // ---- ALERT ----
+  // Mostra un alert quando il timer termina
   async showTimeFinishedAlert() {
     const alert = await this.alertCtrl.create({
       header: 'Tempo finito!',
@@ -128,6 +144,7 @@ export class FocusPage implements OnInit, OnDestroy {
     await alert.present();
   }
 
+  // Chiude la pagina focus; se il timer è attivo chiede conferma
   async closeFocus() {
     if (this.isRunning) {
       const alert = await this.alertCtrl.create({
@@ -140,7 +157,7 @@ export class FocusPage implements OnInit, OnDestroy {
               this.pauseTimer();
               this.saveSession(false);
               this.router.navigate(['/planner']);
-            } 
+            }
           }
         ]
       });

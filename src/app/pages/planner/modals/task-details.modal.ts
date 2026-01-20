@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { IonicModule, ModalController, IonButton } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { Task } from '../task.model';
 
@@ -19,7 +19,8 @@ import { Task } from '../task.model';
     </ion-header>
 
     <ion-content>
-      <div class="task-details-card" [class.completed]="isCompleting">
+      <div class="task-details-card"
+           [ngClass]="{ completed: isCompleting, deleting: isDeleting }">
         <h2>{{ task.title }}</h2>
 
         <p *ngIf="task.description">
@@ -29,7 +30,7 @@ import { Task } from '../task.model';
 
         <p *ngIf="task.subject || task.time">
           <b>Materia: </b><span class="task-meta">
-            {{ task.subject }} 
+            {{ task.subject }}
             <span *ngIf="task.time">- ore {{ task.time }}</span>
           </span>
         </p>
@@ -43,8 +44,17 @@ import { Task } from '../task.model';
         </p>
 
         <div class="task-buttons">
-          <ion-button expand="block" class="complete-btn" (click)="completeTask()"> Completa Task </ion-button>
-          <ion-button expand="block" class="delete-btn" (click)="deleteTask()"> Elimina Task </ion-button>
+          <ion-button expand="block" class="complete-btn"
+                      (click)="completeTask()"
+                      [disabled]="isCompleting || isDeleting">
+            Completa Task
+          </ion-button>
+
+          <ion-button expand="block" class="delete-btn"
+                      (click)="deleteTask()"
+                      [disabled]="isCompleting || isDeleting">
+            Elimina Task
+          </ion-button>
         </div>
       </div>
     </ion-content>
@@ -52,36 +62,36 @@ import { Task } from '../task.model';
   styleUrls: ['./task-details.modal.scss']
 })
 export class TaskDetailsModal {
+  // Task ricevuto dalla pagina chiamante
   @Input() task!: Task;
+
+  // Flag per gestire animazioni e bloccare azioni multiple
   isCompleting = false;
   isDeleting = false;
 
   constructor(private modalCtrl: ModalController){}
 
+  // Completa il task con animazione e ritorna l'azione
   completeTask() {
-    if (this.isCompleting) return;
+    if (this.isCompleting || this.isDeleting) return;
     this.isCompleting = true;
-    
-    const card = document.querySelector('.task-details-card');
-    if (card) card.classList.add('completed');
 
     setTimeout(() => {
       this.modalCtrl.dismiss({ action: 'complete', task: this.task });
     }, 250);
   }
 
+  // Elimina il task con animazione e ritorna l'azione
   deleteTask() {
-    if (this.isDeleting) return;
+    if (this.isDeleting || this.isCompleting) return;
     this.isDeleting = true;
-
-    const card = document.querySelector('.task-details-card');
-    if (card) card.classList.add('deleting');
 
     setTimeout(() => {
       this.modalCtrl.dismiss({ action: 'delete', task: this.task });
     }, 400);
   }
 
+  // Chiusura semplice della modale
   close() {
     this.modalCtrl.dismiss();
   }

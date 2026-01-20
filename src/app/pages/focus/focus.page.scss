@@ -1,11 +1,12 @@
 :host {
-  --ion-background-color: #f4f3f1;  /* Sfondo principale */
-  --ion-text-color: #344c3d;        /* Colore testo principale */
+  --ion-background-color: #f4f3f1; 
+  --ion-text-color: #344c3d;   
 }
 
+// Header
 ion-header ion-toolbar {
-  --background: #f2d1d4; /* Rosa pastello */
-  color: #344c3d;         /* Verde scuro per testo */
+  --background: #f2d1d4;
+  color: #344c3d; 
 }
 
 ion-header ion-title {
@@ -16,6 +17,7 @@ ion-header ion-title {
   letter-spacing: 1px;
 }
 
+// Content
 ion-content {
   --ion-background-color: trasparent;
   background-image: linear-gradient(rgba(255,255,255,0.15), rgba(255,255,255,0.15)),
@@ -29,9 +31,9 @@ ion-content {
 
 .focus-wrapper {
   display: flex;
-  justify-content: center;   // centra orizzontalmente
+  justify-content: center;  
   align-items: center;  
-  padding-top: 30px;       // assicura piena altezza viewport
+  padding-top: 30px;     
 }
 
 .time-container {
@@ -122,7 +124,7 @@ ion-content {
   font-family: var(--font-pixel);
 }
 
-/* Pulsanti */
+// Buttons
 .custom-alert .cancel-btn {
   --color: #d8959b;
   --background: #fff0f2;

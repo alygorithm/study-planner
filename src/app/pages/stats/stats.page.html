@@ -50,6 +50,49 @@
     <p>{{ todayMinutes }} / {{ todayTarget }} min</p>
   </div>
 
+    <!-- =========================
+       FOCUS SESSIONS
+  ========================== -->
+  <div class="focus-section">
+    <h2>Focus Sessions</h2>
+
+    <div class="focus-summary">
+      <div class="focus-card">
+        <h3>Totale sessioni</h3>
+        <p>{{ focusTotalSessions }}</p>
+      </div>
+
+      <div class="focus-card">
+        <h3>Minuti totali</h3>
+        <p>{{ focusTotalMinutes }} min</p>
+      </div>
+
+      <div class="focus-card">
+        <h3>Media</h3>
+        <p>{{ focusAvgMinutes }} min</p>
+      </div>
+    </div>
+
+    <div class="focus-list">
+      <h3>Ultime 3 sessioni</h3>
+
+      <div *ngIf="focusLastSessions.length === 0" class="focus-empty">
+        Nessuna sessione salvata
+      </div>
+
+      <div *ngFor="let s of focusLastSessions" class="focus-row">
+        <div class="focus-row-left">
+          <span class="focus-subject">{{ s.subject }}</span>
+          <span class="focus-date">{{ s.day | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        <div class="focus-row-right">
+          <span class="focus-min">{{ s.minutes }} min</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
 </ion-content>
 
 <ion-footer>

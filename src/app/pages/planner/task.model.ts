@@ -7,7 +7,7 @@ export interface Task {
   subject?: string;
   priority?: string;
   duration?: number;
-  day: Date;
+  day: string;              // data di scadenza / pianificazione
   completed?: boolean;
   completedAt?: Date | null;
 }

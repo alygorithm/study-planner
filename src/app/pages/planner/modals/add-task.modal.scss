@@ -1,12 +1,10 @@
-/* ===========================
-   MODALE ADD TASK – STILE PASTELLO
-=========================== */
 .add-task-modal {
-  --ion-background-color: #f4f3f1; /* Sfondo generale chiaro */
+  --ion-background-color: #f4f3f1; 
   background-color: var(--ion-background-color);
 }
 
-// --- Header ---
+
+// Header
 ion-header ion-toolbar {
   --background: #f2d1d4;
   color: #344c3d;
@@ -35,7 +33,8 @@ ion-button.close-btn:hover {
     color: #d8959b;
 }
 
-// --- Contenuto ---
+
+// Content
 ion-content.add-task-modal {
   display: flex;
   flex-direction: column;
@@ -45,7 +44,8 @@ ion-content.add-task-modal {
   align-items: center;
 }
 
-// --- Ion - Item ---
+
+// Item
 ion-item {
   --background: #c5cac1;
   border-radius: 12px;
@@ -83,7 +83,8 @@ ion-item ion-datetime {
   font-size: 20px;
 }
 
-// --- Pulsanti ---
+
+// Buttons
 .save-btn {
   --background : #d8959b;
   color: #fff;
@@ -106,7 +107,8 @@ ion-button.save-btn::part(native) {
     
 }
 
-// --- Selezione priorità / daytime ---
+
+// Selezione priorità
 ion-select, ion-datetime {
   --color: #344c3d;
   width: 100%;

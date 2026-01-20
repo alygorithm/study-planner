@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { TaskService, FocusSession } from '../planner/task.service';
 
 @Component({
   selector: 'app-profile',
@@ -10,10 +11,16 @@ import { Router } from '@angular/router';
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss']
 })
-export class ProfilePage {
+export class ProfilePage implements OnInit {
   activeTab: string = 'profile';
 
-  constructor(private router: Router) {}
+  sessions: FocusSession[] = [];
+  isLoadingSessions = true;
+
+  constructor(
+    private router: Router,
+    private taskService: TaskService
+  ) {}
 
   navigate(page: string) {
     this.activeTab = page;
@@ -30,4 +37,21 @@ export class ProfilePage {
     studyHours: 120,
     completionPercent: 85
   };
+
+  ngOnInit() {
+    this.loadSessions();
+  }
+
+  loadSessions() {
+    this.taskService.getFocusSessions().subscribe({
+      next: sessions => {
+        this.sessions = sessions.sort((a, b) => new Date(b.day || '').getTime() - new Date(a.day || '').getTime());
+        this.isLoadingSessions = false;
+      },
+      error: err => {
+        console.error(err);
+        this.isLoadingSessions = false;
+      }
+    });
+  }
 }
